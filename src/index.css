@@ -6,96 +6,1234 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
-
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
-
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* MossLab palette */
+    --moss-white: #fafaf7;
+    --moss-light: #eff4ec;
+    --moss-sage: #c8d9c1;
+    --moss-mid: #7faf72;
+    --moss-olive: #5a7a4a;
+    --moss-deep: #2d4a24;
+    --moss-dark: #1a2e14;
+    --moss-text: #1a2e14;
+    --moss-muted: #6b7d63;
+    --moss-border: #d6e2d0;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* ─── Reset & Base ───────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Golos Text", sans-serif;
+  background: var(--moss-white);
+  color: var(--moss-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+input,
+textarea {
+  font-family: inherit;
+}
+
+/* ─── Layout ─────────────────────────────────────────────────────────────────── */
+.moss-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.moss-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+
+.moss-page {
+  flex: 1;
+  padding-bottom: 5rem;
+}
+
+/* ─── Navbar ─────────────────────────────────────────────────────────────────── */
+.moss-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(250, 250, 247, 0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--moss-border);
+}
+
+.moss-nav__inner {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  height: 64px;
+}
+
+.moss-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Cormorant", serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--moss-dark);
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+
+.moss-logo--footer {
+  font-size: 1.4rem;
+}
+
+.moss-logo__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--moss-mid);
+  flex-shrink: 0;
+}
+
+.moss-nav__links {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: 1rem;
+}
+
+.moss-nav__link {
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: var(--moss-muted);
+  font-weight: 500;
+  transition: all 0.15s;
+}
+
+.moss-nav__link:hover {
+  color: var(--moss-dark);
+  background: var(--moss-light);
+}
+.moss-nav__link.active {
+  color: var(--moss-dark);
+  background: var(--moss-light);
+  font-weight: 600;
+}
+
+.moss-nav__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.moss-lang {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--moss-muted);
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--moss-border);
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+  transition: all 0.15s;
+}
+.moss-lang:hover {
+  background: var(--moss-light);
+  color: var(--moss-dark);
+}
+
+.moss-cart-btn {
+  position: relative;
+  padding: 0.5rem;
+  color: var(--moss-dark);
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.moss-cart-btn:hover {
+  background: var(--moss-light);
+}
+
+.moss-cart-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--moss-olive);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.moss-burger {
+  display: none;
+  padding: 0.4rem;
+  color: var(--moss-dark);
+  border-radius: 6px;
+}
+
+.moss-mobile-menu {
+  border-top: 1px solid var(--moss-border);
+  padding: 0.75rem 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: var(--moss-white);
+}
+
+.moss-mobile-menu__item {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: var(--moss-text);
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.moss-mobile-menu__item:hover {
+  background: var(--moss-light);
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────────── */
+.moss-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.moss-btn--primary {
+  background: var(--moss-olive);
+  color: white;
+  box-shadow: 0 1px 4px rgba(45, 74, 36, 0.25);
+}
+.moss-btn--primary:hover {
+  background: var(--moss-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(45, 74, 36, 0.3);
+}
+
+.moss-btn--outline {
+  background: transparent;
+  color: var(--moss-olive);
+  border: 1.5px solid var(--moss-olive);
+}
+.moss-btn--outline:hover {
+  background: var(--moss-light);
+}
+
+.moss-btn--ghost {
+  background: transparent;
+  color: var(--moss-olive);
+  border: 1.5px solid var(--moss-border);
+}
+.moss-btn--ghost:hover {
+  border-color: var(--moss-olive);
+  background: var(--moss-light);
+}
+
+.moss-btn--sm {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8rem;
+}
+.moss-btn--full {
+  width: 100%;
+}
+
+/* ─── Tags / Badges ──────────────────────────────────────────────────────────── */
+.moss-tag {
+  display: inline-block;
+  background: var(--moss-light);
+  color: var(--moss-olive);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid var(--moss-sage);
+}
+.moss-tag--dark {
+  background: rgba(45, 74, 36, 0.12);
+  color: var(--moss-deep);
+  border-color: rgba(45, 74, 36, 0.2);
+}
+
+.moss-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--moss-olive);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+}
+
+/* ─── Hero ───────────────────────────────────────────────────────────────────── */
+.moss-hero {
+  position: relative;
+  height: calc(100vh - 64px);
+  min-height: 560px;
+  max-height: 900px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.moss-hero__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.04);
+  transition: transform 8s ease;
+}
+.moss-hero:hover .moss-hero__bg {
+  transform: scale(1);
+}
+
+.moss-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    rgba(26, 46, 20, 0.72) 0%,
+    rgba(26, 46, 20, 0.45) 55%,
+    rgba(26, 46, 20, 0.1) 100%
+  );
+}
+
+.moss-hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.moss-hero__h1 {
+  font-family: "Cormorant", serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 700;
+  color: white;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.moss-hero__sub {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+.moss-hero__btns {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ─── Features ───────────────────────────────────────────────────────────────── */
+.moss-features {
+  background: var(--moss-white);
+  border-bottom: 1px solid var(--moss-border);
+}
+
+.moss-features__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  padding: 0;
+}
+
+.moss-feature-card {
+  padding: 2rem 1.75rem;
+  border-right: 1px solid var(--moss-border);
+  transition: background 0.2s;
+}
+.moss-feature-card:last-child {
+  border-right: none;
+}
+.moss-feature-card:hover {
+  background: var(--moss-light);
+}
+
+.moss-feature-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--moss-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--moss-olive);
+  margin-bottom: 0.85rem;
+  border: 1px solid var(--moss-border);
+}
+
+.moss-feature-card__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--moss-dark);
+  margin-bottom: 0.3rem;
+}
+
+.moss-feature-card__desc {
+  font-size: 0.83rem;
+  color: var(--moss-muted);
+  line-height: 1.5;
+}
+
+/* ─── Sections ───────────────────────────────────────────────────────────────── */
+.moss-section {
+  padding: 5rem 0;
+}
+.moss-section--light {
+  background: var(--moss-light);
+}
+
+.moss-section__head {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.moss-section__title {
+  font-family: "Cormorant", serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700;
+  color: var(--moss-dark);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 0.6rem;
+}
+.moss-section__title--light {
+  color: white;
+}
+
+.moss-section__sub {
+  font-size: 1rem;
+  color: var(--moss-muted);
+  max-width: 520px;
+  margin: 0 auto;
+}
+.moss-section__sub--light {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.moss-section__center {
+  display: flex;
+  justify-content: center;
+  margin-top: 2.5rem;
+}
+
+/* ─── Products grid ──────────────────────────────────────────────────────────── */
+.moss-products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.moss-product-card {
+  background: white;
+  border: 1px solid var(--moss-border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.moss-product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(45, 74, 36, 0.12);
+}
+
+.moss-product-card__img {
+  position: relative;
+  aspect-ratio: 4/3;
+  background: var(--moss-light);
+  overflow: hidden;
+}
+.moss-product-card__img img {
+  transition: transform 0.4s;
+}
+.moss-product-card:hover .moss-product-card__img img {
+  transform: scale(1.05);
+}
+
+.moss-product-card__body {
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.moss-product-card__cat {
+  font-size: 0.72rem;
+  color: var(--moss-olive);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.moss-product-card__name {
+  font-family: "Cormorant", serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--moss-dark);
+  line-height: 1.2;
+}
+
+.moss-product-card__desc {
+  font-size: 0.82rem;
+  color: var(--moss-muted);
+  line-height: 1.55;
+  flex: 1;
+}
+
+.moss-product-card__colors {
+  font-size: 0.78rem;
+  color: var(--moss-olive);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 500;
+}
+
+.moss-product-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--moss-border);
+}
+
+.moss-product-card__price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--moss-dark);
+}
+
+/* ─── Discounts ──────────────────────────────────────────────────────────────── */
+.moss-discount {
+  padding: 5rem 0;
+  background: linear-gradient(
+    135deg,
+    var(--moss-deep) 0%,
+    var(--moss-olive) 100%
+  );
+  position: relative;
+  overflow: hidden;
+}
+.moss-discount::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.moss-discount__tiers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  position: relative;
+}
+
+.moss-discount__tier {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: background 0.2s;
+}
+.moss-discount__tier:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.moss-discount__value {
+  font-family: "Cormorant", serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.moss-discount__label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.25rem;
+}
+
+.moss-discount__desc {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ─── Reviews ────────────────────────────────────────────────────────────────── */
+.moss-reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.moss-review-card {
+  background: white;
+  border: 1px solid var(--moss-border);
+  border-radius: 14px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: box-shadow 0.2s;
+}
+.moss-review-card:hover {
+  box-shadow: 0 6px 24px rgba(45, 74, 36, 0.1);
+}
+
+.moss-review-card__stars {
+  color: #f59e0b;
+  font-size: 1rem;
+  letter-spacing: 2px;
+}
+
+.moss-review-card__text {
+  font-size: 0.9rem;
+  color: var(--moss-text);
+  line-height: 1.65;
+  flex: 1;
+  font-style: italic;
+}
+
+.moss-review-card__author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--moss-border);
+}
+
+.moss-review-card__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--moss-light);
+  border: 1.5px solid var(--moss-sage);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--moss-olive);
+  flex-shrink: 0;
+}
+
+.moss-review-card__name {
+  font-size: 0.87rem;
+  font-weight: 700;
+  color: var(--moss-dark);
+}
+.moss-review-card__role {
+  font-size: 0.76rem;
+  color: var(--moss-muted);
+}
+
+/* ─── Custom Project ─────────────────────────────────────────────────────────── */
+.moss-custom {
+  padding: 6rem 0;
+  background: var(--moss-light);
+}
+
+.moss-custom__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.moss-custom__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
+}
+
+.moss-custom__title {
+  font-family: "Cormorant", serif;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 700;
+  color: var(--moss-dark);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.moss-custom__sub {
+  font-size: 0.97rem;
+  color: var(--moss-muted);
+  line-height: 1.6;
+}
+
+.moss-custom__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.moss-custom__point {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--moss-text);
+  font-weight: 500;
+}
+.moss-custom__point svg {
+  color: var(--moss-olive);
+  flex-shrink: 0;
+}
+
+.moss-custom__img {
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  box-shadow: 0 16px 48px rgba(45, 74, 36, 0.18);
+}
+
+/* ─── Order Form ─────────────────────────────────────────────────────────────── */
+.moss-order__inner {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.moss-order-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.moss-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1.5px solid var(--moss-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--moss-text);
+  background: white;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.moss-input:focus {
+  border-color: var(--moss-mid);
+}
+.moss-input::placeholder {
+  color: var(--moss-muted);
+}
+.moss-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.moss-order-success {
+  text-align: center;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--moss-olive);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+/* ─── Filters ────────────────────────────────────────────────────────────────── */
+.moss-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.moss-filter-btn {
+  padding: 0.45rem 1rem;
+  border-radius: 20px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--moss-muted);
+  border: 1.5px solid var(--moss-border);
+  background: white;
+  transition: all 0.15s;
+}
+.moss-filter-btn:hover {
+  border-color: var(--moss-mid);
+  color: var(--moss-dark);
+}
+.moss-filter-btn.active {
+  background: var(--moss-olive);
+  color: white;
+  border-color: var(--moss-olive);
+}
+
+/* ─── Cart ───────────────────────────────────────────────────────────────────── */
+.moss-cart-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.moss-cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.moss-cart-item {
+  display: flex;
+  gap: 1rem;
+  background: white;
+  border: 1px solid var(--moss-border);
+  border-radius: 12px;
+  padding: 1rem;
+  align-items: center;
+}
+
+.moss-cart-item__img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--moss-light);
+  flex-shrink: 0;
+}
+
+.moss-cart-item__info {
+  flex: 1;
+}
+.moss-cart-item__name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--moss-dark);
+  margin-bottom: 0.2rem;
+}
+.moss-cart-item__category {
+  font-size: 0.75rem;
+  color: var(--moss-muted);
+  margin-bottom: 0.35rem;
+}
+.moss-cart-item__price {
+  font-weight: 700;
+  color: var(--moss-olive);
+  font-size: 0.97rem;
+}
+
+.moss-cart-item__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.moss-qty-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1.5px solid var(--moss-border);
+  background: white;
+  font-size: 1.1rem;
+  color: var(--moss-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.moss-qty-btn:hover {
+  background: var(--moss-light);
+}
+.moss-qty-value {
+  font-weight: 700;
+  font-size: 0.95rem;
+  min-width: 20px;
+  text-align: center;
+}
+
+.moss-remove-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  color: #e53e3e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.moss-remove-btn:hover {
+  background: #fff5f5;
+}
+
+.moss-cart-summary__box {
+  background: white;
+  border: 1px solid var(--moss-border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.moss-cart-summary__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--moss-muted);
+}
+.moss-cart-summary__row--discount {
+  color: var(--moss-olive);
+  font-weight: 600;
+}
+
+.moss-cart-summary__total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--moss-dark);
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--moss-border);
+  margin-top: 0.25rem;
+}
+
+.moss-discount-hint {
+  background: var(--moss-light);
+  border: 1px solid var(--moss-border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.moss-discount-hint__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--moss-muted);
+}
+
+.moss-discount-hint__val {
+  font-weight: 700;
+  color: var(--moss-olive);
+}
+
+/* ─── Account ────────────────────────────────────────────────────────────────── */
+.moss-account {
+  max-width: 520px;
+  margin: 0 auto;
+  padding-top: 3rem;
+  padding-bottom: 5rem;
+}
+
+.moss-account__sub {
+  color: var(--moss-muted);
+  font-size: 0.93rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.moss-account__auth {
+  display: flex;
+  flex-direction: column;
+}
+
+.moss-account__logged {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.moss-account__welcome {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid var(--moss-border);
+  border-radius: 14px;
+}
+
+.moss-account__avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--moss-light);
+  border: 2px solid var(--moss-sage);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--moss-olive);
+  flex-shrink: 0;
+}
+
+.moss-account__welcome h2 {
+  font-family: "Cormorant", serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--moss-dark);
+}
+.moss-account__welcome p {
+  font-size: 0.85rem;
+  color: var(--moss-muted);
+}
+
+.moss-account__orders h3 {
+  font-family: "Cormorant", serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--moss-dark);
+  margin-bottom: 1rem;
+}
+
+/* ─── Empty state ────────────────────────────────────────────────────────────── */
+.moss-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  color: var(--moss-muted);
+}
+.moss-empty--sm {
+  padding: 2.5rem 1rem;
+}
+.moss-empty p {
+  font-size: 1rem;
+}
+
+/* ─── Page Title ─────────────────────────────────────────────────────────────── */
+.moss-page__title {
+  font-family: "Cormorant", serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--moss-dark);
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────────────── */
+.moss-footer {
+  background: var(--moss-dark);
+  color: white;
+  padding-top: 4rem;
+  margin-top: auto;
+}
+
+.moss-footer__inner {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+}
+
+.moss-footer__desc {
+  font-size: 0.87rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 0.75rem;
+  line-height: 1.6;
+  max-width: 240px;
+}
+
+.moss-footer__heading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 1rem;
+}
+
+.moss-footer__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.moss-footer__link {
+  font-size: 0.87rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: left;
+  transition: color 0.15s;
+}
+.moss-footer__link:hover {
+  color: white;
+}
+
+.moss-footer__bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.25rem 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────────── */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.65s ease forwards;
+}
+
+.moss-hero__content .moss-tag {
+  animation-delay: 0.1s;
+  opacity: 0;
+}
+.moss-hero__h1 {
+  animation-delay: 0.25s;
+  opacity: 0;
+}
+.moss-hero__sub {
+  animation-delay: 0.4s;
+  opacity: 0;
+}
+.moss-hero__btns {
+  animation-delay: 0.55s;
+  opacity: 0;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .moss-features__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .moss-feature-card {
+    border-right: none;
+    border-bottom: 1px solid var(--moss-border);
+  }
+  .moss-feature-card:nth-child(2n) {
+    border-right: none;
+  }
+  .moss-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .moss-reviews-grid {
+    grid-template-columns: 1fr;
+  }
+  .moss-discount__tiers {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .moss-custom__inner {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .moss-cart-layout {
+    grid-template-columns: 1fr;
+  }
+  .moss-footer__inner {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .moss-nav__links {
+    display: none;
+  }
+  .moss-burger {
+    display: flex;
+  }
+  .moss-products-grid {
+    grid-template-columns: 1fr;
+  }
+  .moss-features__grid {
+    grid-template-columns: 1fr;
+  }
+  .moss-discount__tiers {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .moss-footer__inner {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .moss-hero__h1 {
+    font-size: 2.2rem;
+  }
+  .moss-cart-item {
+    flex-wrap: wrap;
   }
 }
