@@ -46,7 +46,7 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
 
   return (
     <>
-      <div className="moss-product-card" onClick={() => setModalOpen(true)} style={{ cursor: "pointer" }}>
+      <div className="moss-product-card" onClick={() => { setModalOpen(true); setActiveTab("info"); setSelectedShade(null); }} style={{ cursor: "pointer" }}>
         <div className="moss-product-card__img">
           {product.image && (
             <img src={product.image} alt={product.name} loading="lazy" />
