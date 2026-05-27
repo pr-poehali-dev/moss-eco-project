@@ -316,7 +316,15 @@ export function MossFooter({ lang, setPage, setFilterCat }: MossFooterProps) {
         </div>
       </div>
       <div className="moss-footer__bottom">
-        <div className="moss-container">© 2024 MossLab. {t.footer.rights}.</div>
+        <div className="moss-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span>© 2024 MossLab. {t.footer.rights}.</span>
+          <button
+            onClick={() => setPage("admin")}
+            style={{ background: "none", border: "none", cursor: "pointer", opacity: 0.3, fontSize: "0.75rem", color: "inherit" }}
+          >
+            ⚙
+          </button>
+        </div>
       </div>
     </footer>
   );

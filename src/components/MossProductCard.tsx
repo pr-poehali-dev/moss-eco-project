@@ -1,6 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 import { Lang, Product, T } from "@/components/moss-data";
+
+const SHADE_IMAGE_URL = "https://functions.poehali.dev/0850ab58-7649-40b0-aca2-a0226c5e6994";
+let shadeImagesCache: Record<string, string> | null = null;
+let shadeImagesFetching: Promise<Record<string, string>> | null = null;
+
+function fetchShadeImages(): Promise<Record<string, string>> {
+  if (shadeImagesCache) return Promise.resolve(shadeImagesCache);
+  if (!shadeImagesFetching) {
+    shadeImagesFetching = fetch(SHADE_IMAGE_URL)
+      .then((r) => r.json())
+      .then((data) => { shadeImagesCache = data; return data; })
+      .catch(() => ({}));
+  }
+  return shadeImagesFetching;
+}
 
 interface MossProductCardProps {
   product: Product;
@@ -41,6 +56,11 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
   const [modalOpen, setModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"info" | "shades">("info");
   const [selectedShade, setSelectedShade] = useState<number | null>(null);
+  const [shadeImages, setShadeImages] = useState<Record<string, string>>(shadeImagesCache ?? {});
+
+  useEffect(() => {
+    fetchShadeImages().then(setShadeImages);
+  }, []);
 
   const shades = product.colors ? MOSS_SHADES.slice(0, product.colors) : [];
 
@@ -137,16 +157,24 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
                       height: "140px",
                       borderRadius: "12px",
                       marginBottom: "0.75rem",
+                      overflow: "hidden",
                       background: selectedShade !== null ? shades[selectedShade].hex : "#e8e8e8",
                       transition: "background 0.3s ease",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
+                      position: "relative",
                     }}
                   >
-                    {selectedShade === null && (
+                    {selectedShade !== null && shadeImages[shades[selectedShade].name] ? (
+                      <img
+                        src={shadeImages[shades[selectedShade].name]}
+                        alt={shades[selectedShade].name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                      />
+                    ) : selectedShade === null ? (
                       <span style={{ color: "#aaa", fontSize: "0.85rem" }}>Выберите оттенок</span>
-                    )}
+                    ) : null}
                   </div>
                   <div className="moss-modal__shade-name">
                     {selectedShade !== null ? (

@@ -1,6 +1,6 @@
 // ─── Types ────────────────────────────────────────────────────────────────────
 export type Lang = "ru" | "en";
-export type Page = "home" | "catalog" | "account" | "cart";
+export type Page = "home" | "catalog" | "account" | "cart" | "admin";
 
 export interface Product {
   id: number;

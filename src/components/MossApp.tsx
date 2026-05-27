@@ -3,6 +3,7 @@ import { Lang, Page, Product, CartItem, PRODUCTS, T } from "@/components/moss-da
 import MossNavbar from "@/components/MossNavbar";
 import MossHomePage from "@/components/MossHomePage";
 import { MossCatalogPage, MossCartPage, MossAccountPage, MossFooter } from "@/components/MossPages";
+import MossAdminPage from "@/components/MossAdminPage";
 
 interface OrderForm {
   name: string;
@@ -121,6 +122,8 @@ export default function MossApp() {
           setIsLoggedIn={setIsLoggedIn}
         />
       )}
+
+      {page === "admin" && <MossAdminPage />}
 
       <MossFooter lang={lang} setPage={setPage} setFilterCat={setFilterCat} />
     </div>
