@@ -44,10 +44,9 @@ export default function MossApp() {
   const cartTotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
   const discountPct =
-    cartTotal >= 50000 * 20 ? 20 :
-    cartTotal >= 50000 * 15 ? 15 :
-    cartTotal >= 50000 * 10 ? 10 :
-    cartTotal >= 50000 * 5 ? 5 : 0;
+    cartCount >= 100 ? 20 :
+    cartCount >= 21  ? 15 :
+    cartCount >= 11  ? 10 : 0;
   const finalTotal = Math.round(cartTotal * (1 - discountPct / 100));
 
   function addToCart(p: Product, shade?: string) {
