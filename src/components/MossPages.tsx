@@ -396,6 +396,7 @@ export function MossAccountPage({ lang, user, authUrl, onLogin, onLogout }: Moss
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [orders, setOrders] = useState<MossOrder[]>([]);
@@ -421,7 +422,7 @@ export function MossAccountPage({ lang, user, authUrl, onLogin, onLogout }: Moss
     setLoading(true);
     try {
       const body: Record<string, string> = { email, password };
-      if (mode === "register") body.name = name;
+      if (mode === "register") { body.name = name; body.phone = phone; }
       const res = await fetch(`${authUrl}?action=${mode}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -518,13 +519,23 @@ export function MossAccountPage({ lang, user, authUrl, onLogin, onLogout }: Moss
             <p className="moss-account__sub">{t.account.loginSub}</p>
             <form className="moss-order-form" onSubmit={handleSubmit}>
               {mode === "register" && (
-                <input
-                  className="moss-input"
-                  type="text"
-                  placeholder="Имя"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+                <>
+                  <input
+                    className="moss-input"
+                    type="text"
+                    placeholder="Имя"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <input
+                    className="moss-input"
+                    type="tel"
+                    placeholder="Телефон *"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                  />
+                </>
               )}
               <input
                 className="moss-input"

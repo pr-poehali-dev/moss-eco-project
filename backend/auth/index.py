@@ -32,7 +32,7 @@ def handler(event: dict, context) -> dict:
 
     if method == "POST" and action == "register":
         body = json.loads(event.get("body") or "{}")
-        return register(body.get("email", "").strip().lower(), body.get("password", ""), body.get("name", "").strip())
+        return register(body.get("email", "").strip().lower(), body.get("password", ""), body.get("name", "").strip(), body.get("phone", "").strip())
 
     if method == "POST" and action == "login":
         body = json.loads(event.get("body") or "{}")
@@ -68,9 +68,11 @@ def db():
     return psycopg2.connect(os.environ["DATABASE_URL"])
 
 
-def register(email: str, password: str, name: str):
+def register(email: str, password: str, name: str, phone: str = ""):
     if not email or not password:
         return {"statusCode": 400, "headers": CORS, "body": json.dumps({"error": "Email и пароль обязательны"})}
+    if not phone:
+        return {"statusCode": 400, "headers": CORS, "body": json.dumps({"error": "Номер телефона обязателен"})}
     if len(password) < 6:
         return {"statusCode": 400, "headers": CORS, "body": json.dumps({"error": "Пароль должен быть не менее 6 символов"})}
 
@@ -83,8 +85,8 @@ def register(email: str, password: str, name: str):
 
     pwd_hash = hash_password(password)
     cur.execute(
-        f"INSERT INTO {SCHEMA}.users (email, password, name) VALUES (%s, %s, %s) RETURNING id",
-        (email, pwd_hash, name or None),
+        f"INSERT INTO {SCHEMA}.users (email, password, name, phone) VALUES (%s, %s, %s, %s) RETURNING id",
+        (email, pwd_hash, name or None, phone),
     )
     user_id = cur.fetchone()[0]
 

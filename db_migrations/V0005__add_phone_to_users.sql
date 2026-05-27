@@ -1,0 +1,1 @@
+ALTER TABLE t_p6422742_moss_eco_project.users ADD COLUMN phone TEXT;
