@@ -105,7 +105,9 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
           )}
           <div className="moss-product-card__footer">
             <div className="moss-product-card__price">
-              {product.price > 0 ? `от ${product.price.toLocaleString()} ₽` : t.catalog.custom}
+              {product.price > 0
+                ? `от ${product.price.toLocaleString()} ₽/${product.unit === "m2" ? "м²" : "кг"}`
+                : t.catalog.custom}
             </div>
             {shades.length === 0 && (
               <button
@@ -138,7 +140,9 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
                 {lang === "ru" ? product.name : product.nameEn}
               </h2>
               <div className="moss-modal__price">
-                {product.price > 0 ? `от ${product.price.toLocaleString()} ₽/кг` : t.catalog.custom}
+                {product.price > 0
+                  ? `от ${product.price.toLocaleString()} ₽/${product.unit === "m2" ? "м²" : "кг"}`
+                  : t.catalog.custom}
               </div>
 
               {shades.length > 0 && (
