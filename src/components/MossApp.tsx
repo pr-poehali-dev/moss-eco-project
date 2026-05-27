@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Lang, Page, Product, CartItem, T } from "@/components/moss-data";
 import MossNavbar from "@/components/MossNavbar";
 import MossHomePage from "@/components/MossHomePage";
-import { MossCatalogPage, MossCartPage, MossAccountPage, MossFooter } from "@/components/MossPages";
+import { MossCartPage, MossAccountPage, MossFooter } from "@/components/MossPages";
 import MossAdminPage from "@/components/MossAdminPage";
 
 const AUTH_URL = "https://functions.poehali.dev/7f977656-8009-4b66-bf51-c2621b26e5f6";
@@ -21,6 +22,7 @@ interface OrderForm {
 }
 
 export default function MossApp() {
+  const navigate = useNavigate();
   const [lang, setLang] = useState<Lang>("ru");
   const [page, setPage] = useState<Page>("home");
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -30,6 +32,11 @@ export default function MossApp() {
   const [prevPage, setPrevPage] = useState<Page>("home");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [orderForm, setOrderForm] = useState<OrderForm>({ name: "", phone: "", message: "" });
+
+  function handleSetPage(p: Page) {
+    if (p === "catalog") { navigate("/catalog"); return; }
+    setPage(p);
+  }
 
   function navigateToAccount() {
     setPrevPage(page);
@@ -114,7 +121,7 @@ export default function MossApp() {
         page={page}
         cartCount={cartCount}
         mobileMenu={mobileMenu}
-        setPage={setPage}
+        setPage={handleSetPage}
         setLang={setLang}
         setMobileMenu={setMobileMenu}
       />
@@ -124,20 +131,7 @@ export default function MossApp() {
           lang={lang}
           orderSent={orderSent}
           orderForm={orderForm}
-          setPage={setPage}
-          setOrderForm={setOrderForm}
-          handleOrderSubmit={handleOrderSubmit}
-          addToCart={addToCart}
-        />
-      )}
-
-      {page === "catalog" && (
-        <MossCatalogPage
-          lang={lang}
-          filterCat={filterCat}
-          orderSent={orderSent}
-          orderForm={orderForm}
-          setFilterCat={setFilterCat}
+          setPage={handleSetPage}
           setOrderForm={setOrderForm}
           handleOrderSubmit={handleOrderSubmit}
           addToCart={addToCart}
@@ -152,7 +146,7 @@ export default function MossApp() {
           cartCount={cartCount}
           discountPct={discountPct}
           finalTotal={finalTotal}
-          setPage={setPage}
+          setPage={handleSetPage}
           removeFromCart={removeFromCart}
           changeQty={changeQty}
           user={user}
@@ -172,7 +166,7 @@ export default function MossApp() {
 
       {page === "admin" && <MossAdminPage />}
 
-      <MossFooter lang={lang} setPage={setPage} setFilterCat={setFilterCat} />
+      <MossFooter lang={lang} setPage={handleSetPage} setFilterCat={setFilterCat} />
     </div>
   );
 }

@@ -103,7 +103,7 @@ export default function MossHomePage({
             ))}
           </div>
           <div className="moss-section__center">
-            <button className="moss-btn moss-btn--ghost" onClick={() => setPage("catalog")}>
+            <button className="moss-btn moss-btn--ghost" onClick={() => setPage("catalog" as import("@/components/moss-data").Page)}>
               {t.catalog.viewAll} <Icon name="ArrowRight" size={16} />
             </button>
           </div>
