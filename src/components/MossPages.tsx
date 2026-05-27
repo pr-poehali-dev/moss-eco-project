@@ -648,8 +648,8 @@ export function MossFooter({ lang, setPage, setFilterCat }: MossFooterProps) {
         <div>
           <div className="moss-footer__heading">{t.footer.contacts}</div>
           <div className="moss-footer__links">
-            <a href="mailto:info@mosslab.ru" className="moss-footer__link">info@mosslab.ru</a>
-            <a href="tel:+79001234567" className="moss-footer__link">+7 (900) 123-45-67</a>
+            <a href="mailto:papet526@gmail.com" className="moss-footer__link">papet526@gmail.com</a>
+            <a href="tel:+79600826886" className="moss-footer__link">+7 (960) 082-68-86</a>
           </div>
         </div>
       </div>
