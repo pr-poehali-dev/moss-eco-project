@@ -114,6 +114,8 @@ export function MossCatalogPage({
 }
 
 // ─── Cart Page ────────────────────────────────────────────────────────────────
+const SEND_ORDER_URL = "https://functions.poehali.dev/49c88edf-c0b4-44ae-a351-1a962622b00f";
+
 interface MossCartPageProps {
   lang: Lang;
   cart: CartItem[];
@@ -123,6 +125,7 @@ interface MossCartPageProps {
   setPage: (p: Page) => void;
   removeFromCart: (id: number) => void;
   changeQty: (id: number, delta: number) => void;
+  onOrderSent?: () => void;
 }
 
 export function MossCartPage({
@@ -134,8 +137,36 @@ export function MossCartPage({
   setPage,
   removeFromCart,
   changeQty,
+  onOrderSent,
 }: MossCartPageProps) {
   const t = T[lang];
+  const [modal, setModal] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [comment, setComment] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    const itemsList = cart
+      .map((i) => `• ${lang === "ru" ? i.name : i.nameEn} × ${i.qty}${i.price > 0 ? ` = ${(i.price * i.qty).toLocaleString()} ₽` : ""}`)
+      .join("\n");
+    const discountLine = discountPct > 0 ? `\nСкидка: −${discountPct}%\nИтого со скидкой: ${finalTotal.toLocaleString()} ₽` : `\nИтого: ${finalTotal.toLocaleString()} ₽`;
+    const message = `Состав заказа:\n${itemsList}${discountLine}${comment ? `\n\nКомментарий: ${comment}` : ""}`;
+    try {
+      await fetch(SEND_ORDER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone, message }),
+      });
+    } catch { /* ignore */ }
+    setLoading(false);
+    setSent(true);
+    onOrderSent?.();
+    setTimeout(() => { setSent(false); setModal(false); setName(""); setPhone(""); setComment(""); }, 3500);
+  }
 
   return (
     <main className="moss-page">
@@ -195,7 +226,10 @@ export function MossCartPage({
                   <span>{t.cart.total}</span>
                   <span>{finalTotal.toLocaleString()} ₽</span>
                 </div>
-                <button className="moss-btn moss-btn--primary moss-btn--full">
+                <button
+                  className="moss-btn moss-btn--primary moss-btn--full"
+                  onClick={() => setModal(true)}
+                >
                   {t.cart.checkout}
                 </button>
               </div>
@@ -211,6 +245,66 @@ export function MossCartPage({
           </div>
         )}
       </div>
+
+      {modal && (
+        <div className="moss-modal-overlay" onClick={() => !loading && setModal(false)}>
+          <div className="moss-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
+            <button className="moss-modal__close" onClick={() => setModal(false)}>
+              <Icon name="X" size={20} />
+            </button>
+            {sent ? (
+              <div style={{ textAlign: "center", padding: "2rem 1rem" }}>
+                <Icon name="CheckCircle" size={48} style={{ color: "var(--moss-green, #2d6a4f)", marginBottom: "1rem" }} />
+                <h3 style={{ fontFamily: "var(--moss-font)", marginBottom: "0.5rem" }}>Заказ принят!</h3>
+                <p style={{ color: "var(--moss-muted)" }}>Мы свяжемся с вами в ближайшее время.</p>
+              </div>
+            ) : (
+              <div className="moss-modal__body">
+                <h3 style={{ fontFamily: "var(--moss-font)", fontSize: "1.2rem", marginBottom: "0.25rem" }}>
+                  Оформление заказа
+                </h3>
+                <p style={{ color: "var(--moss-muted)", fontSize: "0.85rem", marginBottom: "1.25rem" }}>
+                  Итого: <b>{finalTotal.toLocaleString()} ₽</b>
+                  {discountPct > 0 && <span style={{ color: "var(--moss-green, #2d6a4f)" }}> (скидка {discountPct}%)</span>}
+                </p>
+                <form className="moss-order-form" onSubmit={handleSubmit}>
+                  <input
+                    className="moss-input"
+                    type="text"
+                    placeholder="Ваше имя *"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                  <input
+                    className="moss-input"
+                    type="tel"
+                    placeholder="Телефон *"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                  />
+                  <textarea
+                    className="moss-input"
+                    placeholder="Комментарий к заказу"
+                    rows={3}
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    style={{ resize: "none" }}
+                  />
+                  <button
+                    type="submit"
+                    className="moss-btn moss-btn--primary moss-btn--full"
+                    disabled={loading}
+                  >
+                    {loading ? "Отправляем..." : "Отправить заказ"}
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </main>
   );
 }
