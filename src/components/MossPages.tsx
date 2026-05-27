@@ -25,7 +25,7 @@ interface MossCatalogPageProps {
   setFilterCat: (cat: string) => void;
   setOrderForm: (f: OrderForm) => void;
   handleOrderSubmit: (e: React.FormEvent) => void;
-  addToCart: (p: Product) => void;
+  addToCart: (p: Product, shade?: string) => void;
 }
 
 export function MossCatalogPage({

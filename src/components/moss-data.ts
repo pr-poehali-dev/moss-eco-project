@@ -17,6 +17,7 @@ export interface Product {
 
 export interface CartItem extends Product {
   qty: number;
+  shade?: string;
 }
 
 // ─── Images ───────────────────────────────────────────────────────────────────

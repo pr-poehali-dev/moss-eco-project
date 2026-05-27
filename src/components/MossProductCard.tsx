@@ -6,7 +6,7 @@ interface MossProductCardProps {
   product: Product;
   lang: Lang;
   t: (typeof T)["ru"];
-  onAdd: (p: Product) => void;
+  onAdd: (p: Product, shade?: string) => void;
 }
 
 const MOSS_SHADES = [
@@ -158,9 +158,13 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
               <button
                 className="moss-btn moss-btn--primary moss-btn--full"
                 style={{ marginTop: "1.25rem" }}
-                onClick={() => { onAdd(product); setModalOpen(false); }}
+                disabled={shades.length > 0 && selectedShade === null}
+                onClick={() => {
+                  onAdd(product, selectedShade !== null ? shades[selectedShade].name : undefined);
+                  setModalOpen(false);
+                }}
               >
-                {t.catalog.add}
+                {shades.length > 0 && selectedShade === null ? "Выберите оттенок" : t.catalog.add}
               </button>
             </div>
           </div>

@@ -30,11 +30,13 @@ export default function MossApp() {
     cartTotal >= 50000 * 5 ? 5 : 0;
   const finalTotal = Math.round(cartTotal * (1 - discountPct / 100));
 
-  function addToCart(p: Product) {
+  function addToCart(p: Product, shade?: string) {
     setCart((prev) => {
-      const existing = prev.find((i) => i.id === p.id);
-      if (existing) return prev.map((i) => i.id === p.id ? { ...i, qty: i.qty + 1 } : i);
-      return [...prev, { ...p, qty: 1 }];
+      const existing = prev.find((i) => i.id === p.id && i.shade === shade);
+      if (existing) return prev.map((i) => i.id === p.id && i.shade === shade ? { ...i, qty: i.qty + 1 } : i);
+      const name = shade ? `${p.name} — ${shade}` : p.name;
+      const nameEn = shade ? `${p.nameEn} — ${shade}` : p.nameEn;
+      return [...prev, { ...p, name, nameEn, shade, qty: 1 }];
     });
   }
 
