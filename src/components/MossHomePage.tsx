@@ -1,6 +1,25 @@
+import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 import { Lang, Page, Product, T, PRODUCTS, REVIEWS, HERO_IMG, MOSS_COLLECTION_IMG } from "@/components/moss-data";
 import MossProductCard from "@/components/MossProductCard";
+
+function useCountdown(target: Date) {
+  const calc = () => {
+    const diff = Math.max(0, target.getTime() - Date.now());
+    return {
+      days: Math.floor(diff / 86400000),
+      hours: Math.floor((diff % 86400000) / 3600000),
+      minutes: Math.floor((diff % 3600000) / 60000),
+      seconds: Math.floor((diff % 60000) / 1000),
+    };
+  };
+  const [time, setTime] = useState(calc);
+  useEffect(() => {
+    const id = setInterval(() => setTime(calc()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return time;
+}
 
 interface OrderForm {
   name: string;
@@ -28,6 +47,7 @@ export default function MossHomePage({
   addToCart,
 }: MossHomePageProps) {
   const t = T[lang];
+  const countdown = useCountdown(new Date("2026-07-01T00:00:00"));
 
   return (
     <main>
@@ -207,6 +227,18 @@ export default function MossHomePage({
               <h3 className="moss-delivery-card__title">Бесплатная доставка</h3>
               <p className="moss-delivery-card__desc">При заказе от 10 000 ₽ доставка по России до конца июня 2026 г. — бесплатно.</p>
               <div className="moss-delivery-card__price">от 10 000 ₽</div>
+              <div className="moss-countdown">
+                <div className="moss-countdown__label">До конца акции</div>
+                <div className="moss-countdown__grid">
+                  <div className="moss-countdown__unit"><span>{String(countdown.days).padStart(2, "0")}</span><small>дн</small></div>
+                  <div className="moss-countdown__sep">:</div>
+                  <div className="moss-countdown__unit"><span>{String(countdown.hours).padStart(2, "0")}</span><small>ч</small></div>
+                  <div className="moss-countdown__sep">:</div>
+                  <div className="moss-countdown__unit"><span>{String(countdown.minutes).padStart(2, "0")}</span><small>мин</small></div>
+                  <div className="moss-countdown__sep">:</div>
+                  <div className="moss-countdown__unit"><span>{String(countdown.seconds).padStart(2, "0")}</span><small>сек</small></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -1578,6 +1578,58 @@ textarea {
   color: var(--moss-olive);
 }
 
+/* ─── Countdown ──────────────────────────────────────────────────────────────── */
+.moss-countdown {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.moss-countdown__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--moss-muted);
+}
+
+.moss-countdown__grid {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.moss-countdown__unit {
+  background: var(--moss-deep);
+  border-radius: 6px;
+  padding: 4px 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 36px;
+}
+.moss-countdown__unit span {
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.moss-countdown__unit small {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.moss-countdown__sep {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--moss-olive);
+  margin-bottom: 8px;
+}
+
 /* ─── Contacts Section ───────────────────────────────────────────────────────── */
 .moss-contacts-grid {
   display: grid;
