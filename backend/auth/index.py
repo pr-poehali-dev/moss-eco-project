@@ -2,8 +2,16 @@ import hashlib
 import json
 import os
 import secrets
+import smtplib
+import urllib.request
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 import psycopg2
+
+SMTP_USER = "papet526@gmail.com"
+NOTIFY_EMAIL = "papet526@gmail.com"
+TELEGRAM_CHAT_ID = "872293505"
 
 SCHEMA = os.environ.get("MAIN_DB_SCHEMA", "t_p6422742_moss_eco_project")
 CORS = {
@@ -84,6 +92,8 @@ def register(email: str, password: str, name: str):
     conn.commit()
     conn.close()
 
+    notify_new_user(email, name)
+
     return {
         "statusCode": 200,
         "headers": CORS,
@@ -146,6 +156,46 @@ def me(token: str):
         "headers": CORS,
         "body": json.dumps({"user": {"id": row[0], "email": row[1], "name": row[2]}}),
     }
+
+
+def notify_new_user(email: str, name: str):
+    display = name or email
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = f"Новый пользователь на MossLab: {display}"
+        msg["From"] = SMTP_USER
+        msg["To"] = NOTIFY_EMAIL
+        html = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 500px;">
+          <h2 style="color: #2d6a4f;">Новый пользователь зарегистрировался на MossLab</h2>
+          <table style="width:100%; border-collapse:collapse;">
+            <tr>
+              <td style="padding:8px; font-weight:bold; color:#555;">Имя:</td>
+              <td style="padding:8px;">{name or "—"}</td>
+            </tr>
+            <tr style="background:#f9f9f9;">
+              <td style="padding:8px; font-weight:bold; color:#555;">Email:</td>
+              <td style="padding:8px;">{email}</td>
+            </tr>
+          </table>
+        </div>
+        """
+        msg.attach(MIMEText(html, "html"))
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(SMTP_USER, os.environ["SMTP_PASSWORD"])
+            server.sendmail(SMTP_USER, NOTIFY_EMAIL, msg.as_string())
+    except Exception:
+        pass
+
+    try:
+        token = os.environ["TELEGRAM_BOT_TOKEN"]
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        text = f"👤 <b>Новый пользователь на MossLab</b>\n\n<b>Имя:</b> {name or '—'}\n<b>Email:</b> {email}"
+        data = json.dumps({"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "HTML"}).encode()
+        req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+        urllib.request.urlopen(req)
+    except Exception:
+        pass
 
 
 def logout(token: str):
