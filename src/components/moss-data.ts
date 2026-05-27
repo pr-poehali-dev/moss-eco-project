@@ -21,7 +21,7 @@ export interface CartItem extends Product {
 
 // ─── Images ───────────────────────────────────────────────────────────────────
 export const HERO_IMG =
-  "https://cdn.poehali.dev/projects/ad3c7dd6-d380-475d-bcf2-32abf5134c2e/bucket/3d57204e-b92b-4510-8646-ca8a6f0b5cc9.jpg";
+  "https://cdn.poehali.dev/projects/ad3c7dd6-d380-475d-bcf2-32abf5134c2e/files/e8404f99-6d21-466c-9ab7-300c75ca4754.jpg";
 export const MOSS_COLLECTION_IMG =
   "https://cdn.poehali.dev/projects/ad3c7dd6-d380-475d-bcf2-32abf5134c2e/files/16f7125f-6f00-45fe-9ed6-07255fccd602.jpg";
 export const LICHEN_IMG =
