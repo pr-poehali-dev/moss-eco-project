@@ -624,6 +624,170 @@ textarea {
   box-shadow: 0 0 0 2px white inset;
 }
 
+.moss-shade--lg {
+  width: 30px;
+  height: 30px;
+}
+
+/* ─── Modal ──────────────────────────────────────────────────────────────────── */
+.moss-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.moss-modal {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.moss-modal__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: var(--moss-dark);
+}
+
+.moss-modal__img {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.moss-modal__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.moss-modal__body {
+  padding: 1.5rem;
+}
+
+.moss-modal__cat {
+  font-size: 0.72rem;
+  color: var(--moss-olive);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.25rem;
+}
+
+.moss-modal__title {
+  font-family: "Cormorant", serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--moss-dark);
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.moss-modal__price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--moss-green);
+  margin-bottom: 1rem;
+}
+
+.moss-modal__tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--moss-border);
+  margin-bottom: 1rem;
+}
+
+.moss-modal__tab {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  color: var(--moss-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+  font-weight: 500;
+}
+
+.moss-modal__tab.active {
+  color: var(--moss-dark);
+  border-bottom-color: var(--moss-green);
+}
+
+.moss-modal__desc {
+  font-size: 0.9rem;
+  color: var(--moss-muted);
+  line-height: 1.6;
+}
+
+.moss-modal__shades {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.moss-modal__shade-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--moss-dark);
+  min-height: 1.5rem;
+}
+
+.moss-modal__shade-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.moss-modal__shades-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 /* ─── Discounts ──────────────────────────────────────────────────────────────── */
 .moss-discount {
   padding: 5rem 0;
