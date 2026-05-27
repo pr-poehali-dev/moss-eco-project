@@ -13,6 +13,7 @@ const MOSS_SHADES = [
   { name: "Изумруд", hex: "#2d6a4f" },
   { name: "Стандартный зелёный", hex: "#3a7d44" },
   { name: "Ель", hex: "#1b4332" },
+  { name: "Болотный", hex: "#4a5e3a" },
   { name: "Лайм", hex: "#d9ed92" },
   { name: "Трава", hex: "#52b788" },
   { name: "Салатовый", hex: "#a8d96e" },
@@ -21,6 +22,7 @@ const MOSS_SHADES = [
   { name: "Ярко-голубой", hex: "#00aaff" },
   { name: "Синее море", hex: "#1a6b8a" },
   { name: "Бирюзовый", hex: "#2ec4b6" },
+  { name: "Топаз", hex: "#0ba4a4" },
   { name: "Фуксия", hex: "#ff0090" },
   { name: "Розовый", hex: "#ffaec9" },
   { name: "Ультра-розовый", hex: "#ff2d78" },
@@ -33,8 +35,6 @@ const MOSS_SHADES = [
   { name: "Лазурь", hex: "#4fc3f7" },
   { name: "Коричневый", hex: "#7b4f2e" },
   { name: "Фиолетовый", hex: "#7b2d8b" },
-  { name: "Болотный", hex: "#4a5e3a" },
-  { name: "Топаз", hex: "#0ba4a4" },
 ];
 
 export default function MossProductCard({ product, lang, t, onAdd }: MossProductCardProps) {
