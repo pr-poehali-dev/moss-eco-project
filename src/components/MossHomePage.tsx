@@ -1,0 +1,215 @@
+import Icon from "@/components/ui/icon";
+import { Lang, Page, Product, T, PRODUCTS, REVIEWS, HERO_IMG, MOSS_COLLECTION_IMG } from "@/components/moss-data";
+import MossProductCard from "@/components/MossProductCard";
+
+interface OrderForm {
+  name: string;
+  phone: string;
+  message: string;
+}
+
+interface MossHomePageProps {
+  lang: Lang;
+  orderSent: boolean;
+  orderForm: OrderForm;
+  setPage: (p: Page) => void;
+  setOrderForm: (f: OrderForm) => void;
+  handleOrderSubmit: (e: React.FormEvent) => void;
+  addToCart: (p: Product) => void;
+}
+
+export default function MossHomePage({
+  lang,
+  orderSent,
+  orderForm,
+  setPage,
+  setOrderForm,
+  handleOrderSubmit,
+  addToCart,
+}: MossHomePageProps) {
+  const t = T[lang];
+
+  return (
+    <main>
+      {/* Hero */}
+      <section className="moss-hero">
+        <div className="moss-hero__bg" style={{ backgroundImage: `url(${HERO_IMG})` }} />
+        <div className="moss-hero__overlay" />
+        <div className="moss-container moss-hero__content">
+          <span className="moss-tag animate-fade-in">{t.hero.tag}</span>
+          <h1 className="moss-hero__h1 animate-fade-in">{t.hero.h1}</h1>
+          <p className="moss-hero__sub animate-fade-in">{t.hero.sub}</p>
+          <div className="moss-hero__btns animate-fade-in">
+            <button className="moss-btn moss-btn--primary" onClick={() => setPage("catalog")}>
+              {t.hero.cta}
+            </button>
+            <button
+              className="moss-btn moss-btn--outline"
+              onClick={() => {
+                document.getElementById("custom-section")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              {t.hero.cta2}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="moss-features">
+        <div className="moss-container moss-features__grid">
+          {t.features.map((f, i) => (
+            <div key={i} className="moss-feature-card">
+              <div className="moss-feature-card__icon">
+                <Icon name={f.icon} fallback="Leaf" size={24} />
+              </div>
+              <h3 className="moss-feature-card__title">{f.title}</h3>
+              <p className="moss-feature-card__desc">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Products Preview */}
+      <section className="moss-section">
+        <div className="moss-container">
+          <div className="moss-section__head">
+            <h2 className="moss-section__title">{t.catalog.title}</h2>
+            <p className="moss-section__sub">{t.catalog.sub}</p>
+          </div>
+          <div className="moss-products-grid">
+            {PRODUCTS.slice(0, 6).map((p) => (
+              <MossProductCard key={p.id} product={p} lang={lang} t={t} onAdd={addToCart} />
+            ))}
+          </div>
+          <div className="moss-section__center">
+            <button className="moss-btn moss-btn--ghost" onClick={() => setPage("catalog")}>
+              {t.catalog.viewAll} <Icon name="ArrowRight" size={16} />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Discount Section */}
+      <section className="moss-discount">
+        <div className="moss-container">
+          <div className="moss-section__head">
+            <h2 className="moss-section__title moss-section__title--light">{t.discount.title}</h2>
+            <p className="moss-section__sub moss-section__sub--light">{t.discount.sub}</p>
+          </div>
+          <div className="moss-discount__tiers">
+            {t.discount.tiers.map((tier, i) => (
+              <div key={i} className="moss-discount__tier">
+                <div className="moss-discount__value">{tier.value}</div>
+                <div className="moss-discount__label">{tier.label}</div>
+                <div className="moss-discount__desc">{tier.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Reviews */}
+      <section className="moss-section">
+        <div className="moss-container">
+          <div className="moss-section__head">
+            <h2 className="moss-section__title">{t.reviews.title}</h2>
+            <p className="moss-section__sub">{t.reviews.sub}</p>
+          </div>
+          <div className="moss-reviews-grid">
+            {REVIEWS.map((r) => (
+              <div key={r.id} className="moss-review-card">
+                <div className="moss-review-card__stars">{"★".repeat(r.rating)}</div>
+                <p className="moss-review-card__text">
+                  "{lang === "ru" ? r.text : r.textEn}"
+                </p>
+                <div className="moss-review-card__author">
+                  <div className="moss-review-card__avatar">{r.name[0]}</div>
+                  <div>
+                    <div className="moss-review-card__name">{r.name}</div>
+                    <div className="moss-review-card__role">{r.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Custom Project */}
+      <section id="custom-section" className="moss-custom">
+        <div className="moss-container moss-custom__inner">
+          <div className="moss-custom__text">
+            <span className="moss-tag moss-tag--dark">
+              {lang === "ru" ? "Под ваш проект" : "Tailor-made"}
+            </span>
+            <h2 className="moss-custom__title">{t.custom.title}</h2>
+            <p className="moss-custom__sub">{t.custom.sub}</p>
+            <ul className="moss-custom__list">
+              {t.custom.points.map((pt, i) => (
+                <li key={i} className="moss-custom__point">
+                  <Icon name="Check" size={16} />
+                  {pt}
+                </li>
+              ))}
+            </ul>
+            <button
+              className="moss-btn moss-btn--primary"
+              onClick={() => {
+                document.getElementById("order-form")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              {t.custom.cta}
+            </button>
+          </div>
+          <div className="moss-custom__img">
+            <img src={MOSS_COLLECTION_IMG} alt="Custom moss project" />
+          </div>
+        </div>
+      </section>
+
+      {/* Order Form */}
+      <section id="order-form" className="moss-section moss-section--light">
+        <div className="moss-container moss-order__inner">
+          <div className="moss-section__head">
+            <h2 className="moss-section__title">{t.order.title}</h2>
+            <p className="moss-section__sub">{t.order.sub}</p>
+          </div>
+          {orderSent ? (
+            <div className="moss-order-success">
+              <Icon name="CheckCircle" size={40} />
+              <p>{t.order.success}</p>
+            </div>
+          ) : (
+            <form className="moss-order-form" onSubmit={handleOrderSubmit}>
+              <input
+                className="moss-input"
+                placeholder={t.order.name}
+                value={orderForm.name}
+                onChange={(e) => setOrderForm({ ...orderForm, name: e.target.value })}
+                required
+              />
+              <input
+                className="moss-input"
+                placeholder={t.order.phone}
+                value={orderForm.phone}
+                onChange={(e) => setOrderForm({ ...orderForm, phone: e.target.value })}
+                required
+              />
+              <textarea
+                className="moss-input moss-textarea"
+                placeholder={t.order.message}
+                value={orderForm.message}
+                onChange={(e) => setOrderForm({ ...orderForm, message: e.target.value })}
+                rows={4}
+              />
+              <button type="submit" className="moss-btn moss-btn--primary moss-btn--full">
+                {t.order.submit}
+              </button>
+            </form>
+          )}
+        </div>
+      </section>
+    </main>
+  );
+}
