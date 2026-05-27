@@ -67,16 +67,18 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
               {shades.length} {t.catalog.colors}
             </div>
           )}
-          <div className="moss-product-card__footer" onClick={(e) => e.stopPropagation()}>
+          <div className="moss-product-card__footer">
             <div className="moss-product-card__price">
               {product.price > 0 ? `от ${product.price.toLocaleString()} ₽` : t.catalog.custom}
             </div>
-            <button
-              className="moss-btn moss-btn--sm moss-btn--primary"
-              onClick={() => onAdd(product)}
-            >
-              {t.catalog.add}
-            </button>
+            {shades.length === 0 && (
+              <button
+                className="moss-btn moss-btn--sm moss-btn--primary"
+                onClick={(e) => { e.stopPropagation(); onAdd(product); }}
+              >
+                {t.catalog.add}
+              </button>
+            )}
           </div>
         </div>
       </div>
