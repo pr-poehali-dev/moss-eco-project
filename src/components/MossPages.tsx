@@ -648,6 +648,8 @@ export function MossFooter({ lang, setPage, setFilterCat }: MossFooterProps) {
         <div>
           <div className="moss-footer__heading">{t.footer.contacts}</div>
           <div className="moss-footer__links">
+            <span className="moss-footer__link" style={{ color: "inherit", cursor: "default" }}>ИП Петров Павел Андреевич</span>
+            <span className="moss-footer__link" style={{ color: "inherit", cursor: "default" }}>ИНН 120804155440</span>
             <a href="mailto:papet526@gmail.com" className="moss-footer__link">papet526@gmail.com</a>
             <a href="tel:+79600826886" className="moss-footer__link">+7 (960) 082-68-86</a>
           </div>
