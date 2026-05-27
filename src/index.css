@@ -579,6 +579,51 @@ textarea {
   color: var(--moss-dark);
 }
 
+.moss-product-card__shades {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.moss-product-card__shades-label {
+  font-size: 0.78rem;
+  color: var(--moss-olive);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 500;
+  min-height: 1.2em;
+}
+
+.moss-product-card__shades-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.moss-shade {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition:
+    transform 0.15s,
+    border-color 0.15s;
+  padding: 0;
+  outline: none;
+}
+
+.moss-shade:hover {
+  transform: scale(1.2);
+}
+
+.moss-shade--active {
+  border-color: var(--moss-dark);
+  transform: scale(1.2);
+  box-shadow: 0 0 0 2px white inset;
+}
+
 /* ─── Discounts ──────────────────────────────────────────────────────────────── */
 .moss-discount {
   padding: 5rem 0;
