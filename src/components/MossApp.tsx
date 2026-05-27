@@ -27,8 +27,19 @@ export default function MossApp() {
   const [filterCat, setFilterCat] = useState("Все");
   const [orderSent, setOrderSent] = useState(false);
   const [user, setUser] = useState<MossUser | null>(null);
+  const [prevPage, setPrevPage] = useState<Page>("home");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [orderForm, setOrderForm] = useState<OrderForm>({ name: "", phone: "", message: "" });
+
+  function navigateToAccount() {
+    setPrevPage(page);
+    setPage("account");
+  }
+
+  function handleLogin(u: MossUser) {
+    setUser(u);
+    setPage(prevPage);
+  }
 
   useEffect(() => {
     const token = localStorage.getItem("moss_token");
@@ -145,6 +156,7 @@ export default function MossApp() {
           removeFromCart={removeFromCart}
           changeQty={changeQty}
           user={user}
+          goToLogin={navigateToAccount}
         />
       )}
 
@@ -153,7 +165,7 @@ export default function MossApp() {
           lang={lang}
           user={user}
           authUrl={AUTH_URL}
-          onLogin={setUser}
+          onLogin={handleLogin}
           onLogout={handleLogout}
         />
       )}

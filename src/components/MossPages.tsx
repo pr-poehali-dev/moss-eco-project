@@ -128,6 +128,7 @@ interface MossCartPageProps {
   changeQty: (id: number, delta: number) => void;
   onOrderSent?: () => void;
   user?: { name?: string; phone?: string } | null;
+  goToLogin?: () => void;
 }
 
 const DISCOUNT_TIERS = [
@@ -148,6 +149,7 @@ export function MossCartPage({
   changeQty,
   onOrderSent,
   user,
+  goToLogin,
 }: MossCartPageProps) {
   const t = T[lang];
 
@@ -293,7 +295,7 @@ export function MossCartPage({
                     </p>
                     <button
                       className="moss-btn moss-btn--primary moss-btn--full"
-                      onClick={() => setPage("account")}
+                      onClick={() => goToLogin ? goToLogin() : setPage("account")}
                     >
                       Войти / Зарегистрироваться
                     </button>
