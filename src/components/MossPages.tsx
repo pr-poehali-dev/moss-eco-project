@@ -279,12 +279,26 @@ export function MossCartPage({
                   <span>{t.cart.total}</span>
                   <span>{finalTotal.toLocaleString()} ₽</span>
                 </div>
-                <button
-                  className="moss-btn moss-btn--primary moss-btn--full"
-                  onClick={() => setModal(true)}
-                >
-                  {t.cart.checkout}
-                </button>
+                {user ? (
+                  <button
+                    className="moss-btn moss-btn--primary moss-btn--full"
+                    onClick={() => setModal(true)}
+                  >
+                    {t.cart.checkout}
+                  </button>
+                ) : (
+                  <div style={{ textAlign: "center" }}>
+                    <p style={{ color: "var(--moss-muted)", fontSize: "0.85rem", marginBottom: "0.75rem" }}>
+                      Для оформления заказа необходимо войти в аккаунт
+                    </p>
+                    <button
+                      className="moss-btn moss-btn--primary moss-btn--full"
+                      onClick={() => setPage("account")}
+                    >
+                      Войти / Зарегистрироваться
+                    </button>
+                  </div>
+                )}
               </div>
               {nextTier ? (
                 <div className="moss-discount-progress">
