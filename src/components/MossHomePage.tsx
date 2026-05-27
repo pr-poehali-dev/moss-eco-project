@@ -168,6 +168,78 @@ export default function MossHomePage({
         </div>
       </section>
 
+      {/* Delivery */}
+      <section className="moss-section">
+        <div className="moss-container">
+          <div className="moss-section__head">
+            <h2 className="moss-section__title">Доставка</h2>
+            <p className="moss-section__sub">Отправляем по всей России удобным для вас способом</p>
+          </div>
+          <div className="moss-delivery-grid">
+            <div className="moss-delivery-card">
+              <div className="moss-delivery-card__icon">
+                <Icon name="Truck" size={32} />
+              </div>
+              <h3 className="moss-delivery-card__title">СДЭК</h3>
+              <p className="moss-delivery-card__desc">Доставка до двери или пункта выдачи. Срок 2–5 дней по России.</p>
+              <div className="moss-delivery-card__price">от 350 ₽</div>
+            </div>
+            <div className="moss-delivery-card">
+              <div className="moss-delivery-card__icon">
+                <Icon name="Package" size={32} />
+              </div>
+              <h3 className="moss-delivery-card__title">Почта России</h3>
+              <p className="moss-delivery-card__desc">Доставка в любой регион страны. Срок 5–14 дней.</p>
+              <div className="moss-delivery-card__price">от 250 ₽</div>
+            </div>
+            <div className="moss-delivery-card">
+              <div className="moss-delivery-card__icon">
+                <Icon name="MapPin" size={32} />
+              </div>
+              <h3 className="moss-delivery-card__title">Самовывоз</h3>
+              <p className="moss-delivery-card__desc">Заберите заказ самостоятельно. Адрес уточняйте при оформлении.</p>
+              <div className="moss-delivery-card__price">Бесплатно</div>
+            </div>
+            <div className="moss-delivery-card moss-delivery-card--highlight">
+              <div className="moss-delivery-card__icon">
+                <Icon name="Gift" size={32} />
+              </div>
+              <h3 className="moss-delivery-card__title">Бесплатная доставка</h3>
+              <p className="moss-delivery-card__desc">При заказе от 5 000 ₽ доставка по России — бесплатно.</p>
+              <div className="moss-delivery-card__price">от 5 000 ₽</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contacts */}
+      <section className="moss-section moss-section--light">
+        <div className="moss-container">
+          <div className="moss-section__head">
+            <h2 className="moss-section__title">Контакты</h2>
+            <p className="moss-section__sub">Свяжитесь с нами любым удобным способом</p>
+          </div>
+          <div className="moss-contacts-grid">
+            <div className="moss-contact-card">
+              <div className="moss-contact-card__icon"><Icon name="Phone" size={28} /></div>
+              <div className="moss-contact-card__label">Телефон</div>
+              <a href="tel:+79600826886" className="moss-contact-card__value">+7 (960) 082-68-86</a>
+            </div>
+            <div className="moss-contact-card">
+              <div className="moss-contact-card__icon"><Icon name="Mail" size={28} /></div>
+              <div className="moss-contact-card__label">Email</div>
+              <a href="mailto:papet526@gmail.com" className="moss-contact-card__value">papet526@gmail.com</a>
+            </div>
+            <div className="moss-contact-card">
+              <div className="moss-contact-card__icon"><Icon name="Building2" size={28} /></div>
+              <div className="moss-contact-card__label">Реквизиты</div>
+              <div className="moss-contact-card__value">ИП Петров Павел Андреевич</div>
+              <div className="moss-contact-card__sub">ИНН 120804155440</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Order Form */}
       <section id="order-form" className="moss-section moss-section--light">
         <div className="moss-container moss-order__inner">
