@@ -131,6 +131,23 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
 
               {activeTab === "shades" && shades.length > 0 && (
                 <div className="moss-modal__shades">
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "140px",
+                      borderRadius: "12px",
+                      marginBottom: "0.75rem",
+                      background: selectedShade !== null ? shades[selectedShade].hex : "#e8e8e8",
+                      transition: "background 0.3s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {selectedShade === null && (
+                      <span style={{ color: "#aaa", fontSize: "0.85rem" }}>Выберите оттенок</span>
+                    )}
+                  </div>
                   <div className="moss-modal__shade-name">
                     {selectedShade !== null ? (
                       <>
@@ -138,7 +155,7 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
                         {shades[selectedShade].name}
                       </>
                     ) : (
-                      <span style={{ color: "var(--moss-muted)" }}>Выберите оттенок</span>
+                      <span style={{ color: "var(--moss-muted)" }}>&nbsp;</span>
                     )}
                   </div>
                   <div className="moss-modal__shades-grid">
