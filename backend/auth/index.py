@@ -46,6 +46,10 @@ def handler(event: dict, context) -> dict:
         token = get_token(event)
         return logout(token)
 
+    if method == "GET" and action == "orders":
+        token = get_token(event)
+        return get_orders(token)
+
     return {"statusCode": 404, "headers": CORS, "body": json.dumps({"error": "Unknown action"})}
 
 
@@ -196,6 +200,48 @@ def notify_new_user(email: str, name: str):
         urllib.request.urlopen(req)
     except Exception:
         pass
+
+
+def get_orders(token: str):
+    if not token:
+        return {"statusCode": 401, "headers": CORS, "body": json.dumps({"error": "Не авторизован"})}
+
+    conn = db()
+    cur = conn.cursor()
+    cur.execute(
+        f"SELECT user_id FROM {SCHEMA}.sessions WHERE token = %s AND expires_at > NOW()",
+        (token,),
+    )
+    row = cur.fetchone()
+    if not row:
+        conn.close()
+        return {"statusCode": 401, "headers": CORS, "body": json.dumps({"error": "Сессия истекла"})}
+
+    user_id = row[0]
+    cur.execute(
+        f"SELECT id, name, phone, message, items, total, discount, final_total, status, created_at "
+        f"FROM {SCHEMA}.orders WHERE user_id = %s ORDER BY created_at DESC",
+        (user_id,),
+    )
+    rows = cur.fetchall()
+    conn.close()
+
+    orders = [
+        {
+            "id": r[0],
+            "name": r[1],
+            "phone": r[2],
+            "message": r[3],
+            "items": r[4],
+            "total": r[5],
+            "discount": r[6],
+            "finalTotal": r[7],
+            "status": r[8],
+            "createdAt": r[9].isoformat(),
+        }
+        for r in rows
+    ]
+    return {"statusCode": 200, "headers": CORS, "body": json.dumps({"orders": orders})}
 
 
 def logout(token: str):

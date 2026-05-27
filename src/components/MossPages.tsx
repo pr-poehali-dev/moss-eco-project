@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 import {
   Lang,
@@ -166,16 +166,30 @@ export function MossCartPage({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const itemsList = cart
-      .map((i) => `• ${lang === "ru" ? i.name : i.nameEn} × ${i.qty}${i.price > 0 ? ` = ${(i.price * i.qty).toLocaleString()} ₽` : ""}`)
-      .join("\n");
-    const discountLine = discountPct > 0 ? `\nСкидка: −${discountPct}%\nИтого со скидкой: ${finalTotal.toLocaleString()} ₽` : `\nИтого: ${finalTotal.toLocaleString()} ₽`;
-    const message = `Состав заказа:\n${itemsList}${discountLine}${comment ? `\n\nКомментарий: ${comment}` : ""}`;
+    const token = localStorage.getItem("moss_token") || "";
+    const items = cart.map((i) => ({
+      id: i.id,
+      name: lang === "ru" ? i.name : i.nameEn,
+      qty: i.qty,
+      price: i.price,
+      unit: i.unit ?? "kg",
+    }));
     try {
       await fetch(SEND_ORDER_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, message }),
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          name,
+          phone,
+          message: comment,
+          items,
+          total: cartTotal,
+          discount: discountPct,
+          finalTotal,
+        }),
       });
     } catch { /* ignore */ }
     setLoading(false);
@@ -363,6 +377,19 @@ interface MossAccountPageProps {
   onLogout: () => void;
 }
 
+interface MossOrder {
+  id: number;
+  name: string;
+  phone: string;
+  message?: string;
+  items: { name: string; qty: number; price: number; unit?: string }[];
+  total: number;
+  discount: number;
+  finalTotal: number;
+  status: string;
+  createdAt: string;
+}
+
 export function MossAccountPage({ lang, user, authUrl, onLogin, onLogout }: MossAccountPageProps) {
   const t = T[lang];
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -371,6 +398,22 @@ export function MossAccountPage({ lang, user, authUrl, onLogin, onLogout }: Moss
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [orders, setOrders] = useState<MossOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    const token = localStorage.getItem("moss_token");
+    if (!token) return;
+    setOrdersLoading(true);
+    fetch(`${authUrl}?action=orders`, {
+      headers: { "Authorization": `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((data) => setOrders(data.orders || []))
+      .catch(() => {})
+      .finally(() => setOrdersLoading(false));
+  }, [user, authUrl]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -412,10 +455,45 @@ export function MossAccountPage({ lang, user, authUrl, onLogin, onLogout }: Moss
             </div>
             <div className="moss-account__orders">
               <h3>{t.account.orders}</h3>
-              <div className="moss-empty moss-empty--sm">
-                <Icon name="Package" size={36} />
-                <p>{t.account.noOrders}</p>
-              </div>
+              {ordersLoading ? (
+                <p style={{ color: "var(--moss-muted)", fontSize: "0.9rem" }}>Загружаем...</p>
+              ) : orders.length === 0 ? (
+                <div className="moss-empty moss-empty--sm">
+                  <Icon name="Package" size={36} />
+                  <p>{t.account.noOrders}</p>
+                </div>
+              ) : (
+                <div className="moss-orders-list">
+                  {orders.map((order) => (
+                    <div key={order.id} className="moss-order-card">
+                      <div className="moss-order-card__header">
+                        <span className="moss-order-card__num">Заказ #{order.id}</span>
+                        <span className="moss-order-card__date">
+                          {new Date(order.createdAt).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}
+                        </span>
+                        <span className={`moss-order-card__status moss-order-card__status--${order.status}`}>
+                          {order.status === "new" ? "Новый" : order.status === "done" ? "Выполнен" : order.status}
+                        </span>
+                      </div>
+                      <div className="moss-order-card__items">
+                        {(order.items || []).map((item, i) => (
+                          <div key={i} className="moss-order-card__item">
+                            <span>{item.name}</span>
+                            <span>{item.qty} {item.unit === "m2" ? "м²" : "кг"}</span>
+                            <span>{item.price > 0 ? `${(item.price * item.qty).toLocaleString()} ₽` : "На заказ"}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="moss-order-card__footer">
+                        {order.discount > 0 && (
+                          <span className="moss-order-card__discount">Скидка {order.discount}%</span>
+                        )}
+                        <span className="moss-order-card__total">{order.finalTotal?.toLocaleString()} ₽</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <button className="moss-btn moss-btn--outline" onClick={onLogout}>
               {t.account.logout}
