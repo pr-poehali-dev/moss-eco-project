@@ -127,6 +127,7 @@ interface MossCartPageProps {
   removeFromCart: (id: number) => void;
   changeQty: (id: number, delta: number) => void;
   onOrderSent?: () => void;
+  user?: { name?: string; phone?: string } | null;
 }
 
 const DISCOUNT_TIERS = [
@@ -146,6 +147,7 @@ export function MossCartPage({
   removeFromCart,
   changeQty,
   onOrderSent,
+  user,
 }: MossCartPageProps) {
   const t = T[lang];
 
@@ -157,11 +159,16 @@ export function MossCartPage({
     ? Math.min(100, Math.round(((cartCount - prevTierKg) / (nextTier.kg - prevTierKg)) * 100))
     : 100;
   const [modal, setModal] = useState(false);
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [name, setName] = useState(user?.name || "");
+  const [phone, setPhone] = useState(user?.phone || "");
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+
+  useEffect(() => {
+    if (user?.name) setName(user.name);
+    if (user?.phone) setPhone(user.phone);
+  }, [user]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

@@ -103,7 +103,7 @@ def register(email: str, password: str, name: str, phone: str = ""):
     return {
         "statusCode": 200,
         "headers": CORS,
-        "body": json.dumps({"token": token, "user": {"id": user_id, "email": email, "name": name}}),
+        "body": json.dumps({"token": token, "user": {"id": user_id, "email": email, "name": name, "phone": phone}}),
     }
 
 
@@ -115,7 +115,7 @@ def login(email: str, password: str):
     cur = conn.cursor()
     pwd_hash = hash_password(password)
     cur.execute(
-        f"SELECT id, email, name FROM {SCHEMA}.users WHERE email = %s AND password = %s",
+        f"SELECT id, email, name, phone FROM {SCHEMA}.users WHERE email = %s AND password = %s",
         (email, pwd_hash),
     )
     row = cur.fetchone()
@@ -123,7 +123,7 @@ def login(email: str, password: str):
         conn.close()
         return {"statusCode": 401, "headers": CORS, "body": json.dumps({"error": "Неверный email или пароль"})}
 
-    user_id, user_email, user_name = row
+    user_id, user_email, user_name, user_phone = row
     token = secrets.token_hex(32)
     cur.execute(
         f"INSERT INTO {SCHEMA}.sessions (token, user_id) VALUES (%s, %s)",
@@ -135,7 +135,7 @@ def login(email: str, password: str):
     return {
         "statusCode": 200,
         "headers": CORS,
-        "body": json.dumps({"token": token, "user": {"id": user_id, "email": user_email, "name": user_name}}),
+        "body": json.dumps({"token": token, "user": {"id": user_id, "email": user_email, "name": user_name, "phone": user_phone}}),
     }
 
 
@@ -146,7 +146,7 @@ def me(token: str):
     conn = db()
     cur = conn.cursor()
     cur.execute(
-        f"SELECT u.id, u.email, u.name FROM {SCHEMA}.sessions s "
+        f"SELECT u.id, u.email, u.name, u.phone FROM {SCHEMA}.sessions s "
         f"JOIN {SCHEMA}.users u ON u.id = s.user_id "
         f"WHERE s.token = %s AND s.expires_at > NOW()",
         (token,),
@@ -160,7 +160,7 @@ def me(token: str):
     return {
         "statusCode": 200,
         "headers": CORS,
-        "body": json.dumps({"user": {"id": row[0], "email": row[1], "name": row[2]}}),
+        "body": json.dumps({"user": {"id": row[0], "email": row[1], "name": row[2], "phone": row[3]}}),
     }
 
 

@@ -11,6 +11,7 @@ export interface MossUser {
   id: number;
   email: string;
   name?: string;
+  phone?: string;
 }
 
 interface OrderForm {
@@ -143,6 +144,7 @@ export default function MossApp() {
           setPage={setPage}
           removeFromCart={removeFromCart}
           changeQty={changeQty}
+          user={user}
         />
       )}
 
