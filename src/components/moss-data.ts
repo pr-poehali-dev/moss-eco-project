@@ -13,6 +13,7 @@ export interface Product {
   badge?: string;
   colors?: number;
   image?: string;
+  unit?: "kg" | "m2";
 }
 
 export interface CartItem extends Product {
@@ -86,6 +87,7 @@ export const PRODUCTS: Product[] = [
     price: 5000,
     colors: 2,
     image: MOSS_COLLECTION_IMG,
+    unit: "m2",
   },
   {
     id: 6,
@@ -97,6 +99,7 @@ export const PRODUCTS: Product[] = [
     price: 7000,
     colors: 2,
     image: MOSS_COLLECTION_IMG,
+    unit: "m2",
   },
   {
     id: 7,
@@ -180,9 +183,9 @@ export const T = {
       title: "Система скидок",
       sub: "Чем больше заказ — тем выгоднее цена",
       tiers: [
-        { label: "от 11 кг", value: "10%", desc: "Скидка на весь заказ" },
-        { label: "от 21 кг", value: "15%", desc: "Скидка на весь заказ" },
-        { label: "от 100 кг", value: "20%", desc: "Скидка на весь заказ" },
+        { label: "от 11 ед.", value: "10%", desc: "Скидка на весь заказ" },
+        { label: "от 21 ед.", value: "15%", desc: "Скидка на весь заказ" },
+        { label: "от 100 ед.", value: "20%", desc: "Скидка на весь заказ" },
       ],
     },
     reviews: { title: "Отзывы клиентов", sub: "Нам доверяют дизайнеры, флористы и бизнес" },
@@ -256,9 +259,9 @@ export const T = {
       title: "Discount System",
       sub: "Bigger order — better price",
       tiers: [
-        { label: "from 11 kg", value: "10%", desc: "Discount on entire order" },
-        { label: "from 21 kg", value: "15%", desc: "Discount on entire order" },
-        { label: "from 100 kg", value: "20%", desc: "Discount on entire order" },
+        { label: "from 11 units", value: "10%", desc: "Discount on entire order" },
+        { label: "from 21 units", value: "15%", desc: "Discount on entire order" },
+        { label: "from 100 units", value: "20%", desc: "Discount on entire order" },
       ],
     },
     reviews: { title: "Client Reviews", sub: "Trusted by designers, florists and businesses" },

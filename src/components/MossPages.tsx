@@ -217,7 +217,9 @@ export function MossCartPage({
                   </div>
                   <div className="moss-cart-item__controls">
                     <button className="moss-qty-btn" onClick={() => changeQty(item.id, -1)}>−</button>
-                    <span className="moss-qty-value">{item.qty}</span>
+                    <span className="moss-qty-value">
+                      {item.qty} {item.unit === "m2" ? "м²" : "кг"}
+                    </span>
                     <button className="moss-qty-btn" onClick={() => changeQty(item.id, 1)}>+</button>
                     <button className="moss-remove-btn" onClick={() => removeFromCart(item.id)}>
                       <Icon name="Trash2" size={16} />
@@ -253,8 +255,8 @@ export function MossCartPage({
                 <div className="moss-discount-progress">
                   <p className="moss-discount-progress__text">
                     {lang === "ru"
-                      ? `Ещё ${nextTier.kg - cartCount} кг — и скидка ${nextTier.pct}%`
-                      : `${nextTier.kg - cartCount} kg more — get ${nextTier.pct}% off`}
+                      ? `Ещё ${nextTier.kg - cartCount} ед. — и скидка ${nextTier.pct}%`
+                      : `${nextTier.kg - cartCount} more — get ${nextTier.pct}% off`}
                   </p>
                   <div className="moss-discount-progress__bar">
                     <div
@@ -263,8 +265,8 @@ export function MossCartPage({
                     />
                   </div>
                   <div className="moss-discount-progress__labels">
-                    <span>{prevTierKg} кг</span>
-                    <span>{nextTier.kg} кг</span>
+                    <span>{prevTierKg} ед.</span>
+                    <span>{nextTier.kg} ед.</span>
                   </div>
                 </div>
               ) : (
