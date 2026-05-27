@@ -155,17 +155,19 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
                 </div>
               )}
 
-              <button
-                className="moss-btn moss-btn--primary moss-btn--full"
-                style={{ marginTop: "1.25rem" }}
-                disabled={shades.length > 0 && selectedShade === null}
-                onClick={() => {
-                  onAdd(product, selectedShade !== null ? shades[selectedShade].name : undefined);
-                  setModalOpen(false);
-                }}
-              >
-                {shades.length > 0 && selectedShade === null ? "Выберите оттенок" : t.catalog.add}
-              </button>
+              {(shades.length === 0 || activeTab === "shades") && (
+                <button
+                  className="moss-btn moss-btn--primary moss-btn--full"
+                  style={{ marginTop: "1.25rem" }}
+                  disabled={shades.length > 0 && selectedShade === null}
+                  onClick={() => {
+                    onAdd(product, selectedShade !== null ? shades[selectedShade].name : undefined);
+                    setModalOpen(false);
+                  }}
+                >
+                  {shades.length > 0 && selectedShade === null ? "Выберите оттенок" : t.catalog.add}
+                </button>
+              )}
             </div>
           </div>
         </div>
