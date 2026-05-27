@@ -197,7 +197,7 @@ export default function MossHomePage({
                 <Icon name="MapPin" size={32} />
               </div>
               <h3 className="moss-delivery-card__title">Самовывоз</h3>
-              <p className="moss-delivery-card__desc">Заберите заказ самостоятельно. Адрес уточняйте при оформлении.</p>
+              <p className="moss-delivery-card__desc">Марий Эл, пгт. Красногорский. Согласуйте время получения при оформлении.</p>
               <div className="moss-delivery-card__price">Бесплатно</div>
             </div>
             <div className="moss-delivery-card moss-delivery-card--highlight">
@@ -205,8 +205,8 @@ export default function MossHomePage({
                 <Icon name="Gift" size={32} />
               </div>
               <h3 className="moss-delivery-card__title">Бесплатная доставка</h3>
-              <p className="moss-delivery-card__desc">При заказе от 5 000 ₽ доставка по России — бесплатно.</p>
-              <div className="moss-delivery-card__price">от 5 000 ₽</div>
+              <p className="moss-delivery-card__desc">При заказе от 10 000 ₽ доставка по России до конца июня 2026 г. — бесплатно.</p>
+              <div className="moss-delivery-card__price">от 10 000 ₽</div>
             </div>
           </div>
         </div>
