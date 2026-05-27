@@ -120,6 +120,7 @@ interface MossCartPageProps {
   lang: Lang;
   cart: CartItem[];
   cartTotal: number;
+  cartCount: number;
   discountPct: number;
   finalTotal: number;
   setPage: (p: Page) => void;
@@ -128,10 +129,17 @@ interface MossCartPageProps {
   onOrderSent?: () => void;
 }
 
+const DISCOUNT_TIERS = [
+  { kg: 11, pct: 10 },
+  { kg: 21, pct: 15 },
+  { kg: 100, pct: 20 },
+];
+
 export function MossCartPage({
   lang,
   cart,
   cartTotal,
+  cartCount,
   discountPct,
   finalTotal,
   setPage,
@@ -140,6 +148,14 @@ export function MossCartPage({
   onOrderSent,
 }: MossCartPageProps) {
   const t = T[lang];
+
+  const nextTier = DISCOUNT_TIERS.find((tier) => cartCount < tier.kg);
+  const prevTierKg = nextTier
+    ? DISCOUNT_TIERS[DISCOUNT_TIERS.indexOf(nextTier) - 1]?.kg ?? 0
+    : null;
+  const progress = nextTier && prevTierKg !== null
+    ? Math.min(100, Math.round(((cartCount - prevTierKg) / (nextTier.kg - prevTierKg)) * 100))
+    : 100;
   const [modal, setModal] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -233,6 +249,31 @@ export function MossCartPage({
                   {t.cart.checkout}
                 </button>
               </div>
+              {nextTier ? (
+                <div className="moss-discount-progress">
+                  <p className="moss-discount-progress__text">
+                    {lang === "ru"
+                      ? `Ещё ${nextTier.kg - cartCount} кг — и скидка ${nextTier.pct}%`
+                      : `${nextTier.kg - cartCount} kg more — get ${nextTier.pct}% off`}
+                  </p>
+                  <div className="moss-discount-progress__bar">
+                    <div
+                      className="moss-discount-progress__fill"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <div className="moss-discount-progress__labels">
+                    <span>{prevTierKg} кг</span>
+                    <span>{nextTier.kg} кг</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="moss-discount-progress">
+                  <p className="moss-discount-progress__text moss-discount-progress__text--max">
+                    {lang === "ru" ? "Максимальная скидка 20% активна!" : "Maximum 20% discount applied!"}
+                  </p>
+                </div>
+              )}
               <div className="moss-discount-hint">
                 {t.discount.tiers.map((tier, i) => (
                   <div key={i} className="moss-discount-hint__row">

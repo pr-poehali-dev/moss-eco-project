@@ -137,6 +137,7 @@ export default function MossApp() {
           lang={lang}
           cart={cart}
           cartTotal={cartTotal}
+          cartCount={cartCount}
           discountPct={discountPct}
           finalTotal={finalTotal}
           setPage={setPage}
