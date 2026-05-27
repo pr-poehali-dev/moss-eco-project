@@ -3,9 +3,9 @@ import Icon from "@/components/ui/icon";
 import { Lang, Product, T } from "@/components/moss-data";
 
 const SHADE_IMAGE_URL = "https://functions.poehali.dev/0850ab58-7649-40b0-aca2-a0226c5e6994";
+
 let shadeImagesCache: Record<string, string> | null = null;
 let shadeImagesFetching: Promise<Record<string, string>> | null = null;
-
 function fetchShadeImages(): Promise<Record<string, string>> {
   if (shadeImagesCache) return Promise.resolve(shadeImagesCache);
   if (!shadeImagesFetching) {
@@ -15,6 +15,19 @@ function fetchShadeImages(): Promise<Record<string, string>> {
       .catch(() => ({}));
   }
   return shadeImagesFetching;
+}
+
+let productImagesCache: Record<string, string> | null = null;
+let productImagesFetching: Promise<Record<string, string>> | null = null;
+function fetchProductImages(): Promise<Record<string, string>> {
+  if (productImagesCache) return Promise.resolve(productImagesCache);
+  if (!productImagesFetching) {
+    productImagesFetching = fetch(`${SHADE_IMAGE_URL}?kind=product`)
+      .then((r) => r.json())
+      .then((data) => { productImagesCache = data; return data; })
+      .catch(() => ({}));
+  }
+  return productImagesFetching;
 }
 
 interface MossProductCardProps {
@@ -57,19 +70,22 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
   const [activeTab, setActiveTab] = useState<"info" | "shades">("info");
   const [selectedShade, setSelectedShade] = useState<number | null>(null);
   const [shadeImages, setShadeImages] = useState<Record<string, string>>(shadeImagesCache ?? {});
+  const [productImages, setProductImages] = useState<Record<string, string>>(productImagesCache ?? {});
 
   useEffect(() => {
     fetchShadeImages().then(setShadeImages);
+    fetchProductImages().then(setProductImages);
   }, []);
 
   const shades = product.colors ? MOSS_SHADES.slice(0, product.colors) : [];
+  const productImg = productImages[String(product.id)] || product.image;
 
   return (
     <>
       <div className="moss-product-card" onClick={() => { setModalOpen(true); setActiveTab("info"); setSelectedShade(null); }} style={{ cursor: "pointer" }}>
         <div className="moss-product-card__img">
-          {product.image && (
-            <img src={product.image} alt={product.name} loading="lazy" />
+          {productImg && (
+            <img src={productImg} alt={product.name} loading="lazy" />
           )}
           {product.badge && <span className="moss-badge">{product.badge}</span>}
         </div>
@@ -110,9 +126,9 @@ export default function MossProductCard({ product, lang, t, onAdd }: MossProduct
               <Icon name="X" size={20} />
             </button>
 
-            {product.image && (
+            {productImg && (
               <div className="moss-modal__img">
-                <img src={product.image} alt={product.name} />
+                <img src={productImg} alt={product.name} />
               </div>
             )}
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Icon from "@/components/ui/icon";
+import { PRODUCTS } from "@/components/moss-data";
 
 const SHADE_IMAGE_URL = "https://functions.poehali.dev/0850ab58-7649-40b0-aca2-a0226c5e6994";
 
@@ -31,8 +32,12 @@ const MOSS_SHADES = [
   { name: "Фиолетовый", hex: "#7b2d8b" },
 ];
 
+type Tab = "products" | "shades";
+
 export default function MossAdminPage() {
+  const [tab, setTab] = useState<Tab>("products");
   const [shadeImages, setShadeImages] = useState<Record<string, string>>({});
+  const [productImages, setProductImages] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -41,7 +46,11 @@ export default function MossAdminPage() {
   useEffect(() => {
     fetch(SHADE_IMAGE_URL)
       .then((r) => r.json())
-      .then((data) => setShadeImages(data))
+      .then(setShadeImages)
+      .catch(() => {});
+    fetch(`${SHADE_IMAGE_URL}?kind=product`)
+      .then((r) => r.json())
+      .then(setProductImages)
       .catch(() => {});
   }, []);
 
@@ -50,21 +59,20 @@ export default function MossAdminPage() {
     setTimeout(() => setToast(null), 3000);
   }
 
-  async function handleFileChange(shadeName: string, file: File) {
-    setUploading(shadeName);
+  function uploadFile(key: string, file: File, body: object, onSuccess: (url: string) => void) {
+    setUploading(key);
     const reader = new FileReader();
     reader.onload = async () => {
       const base64 = (reader.result as string).split(",")[1];
-      const contentType = file.type || "image/jpeg";
       try {
         const res = await fetch(SHADE_IMAGE_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ shade_name: shadeName, image_b64: base64, content_type: contentType }),
+          body: JSON.stringify({ ...body, image_b64: base64, content_type: file.type || "image/jpeg" }),
         });
         const data = await res.json();
-        setShadeImages((prev) => ({ ...prev, [shadeName]: data.image_url }));
-        showToast(`Фото для «${shadeName}» загружено`);
+        onSuccess(data.image_url);
+        showToast("Фото загружено");
       } catch {
         showToast("Ошибка загрузки");
       } finally {
@@ -74,16 +82,11 @@ export default function MossAdminPage() {
     reader.readAsDataURL(file);
   }
 
-  async function handleDelete(shadeName: string) {
-    setDeleting(shadeName);
+  async function deleteFile(url: string, onSuccess: () => void) {
     try {
-      await fetch(`${SHADE_IMAGE_URL}?shade_name=${encodeURIComponent(shadeName)}`, { method: "DELETE" });
-      setShadeImages((prev) => {
-        const next = { ...prev };
-        delete next[shadeName];
-        return next;
-      });
-      showToast(`Фото «${shadeName}» удалено`);
+      await fetch(url, { method: "DELETE" });
+      onSuccess();
+      showToast("Фото удалено");
     } catch {
       showToast("Ошибка удаления");
     } finally {
@@ -91,102 +94,137 @@ export default function MossAdminPage() {
     }
   }
 
-  return (
-    <main style={{ maxWidth: 860, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
-      <h1 style={{ fontFamily: "var(--moss-font)", fontSize: "1.6rem", marginBottom: "0.5rem" }}>
-        Фотографии оттенков
-      </h1>
-      <p style={{ color: "var(--moss-muted)", marginBottom: "2rem", fontSize: "0.9rem" }}>
-        Загрузите фото для каждого оттенка — оно будет показываться покупателям при выборе цвета.
-      </p>
+  function renderImageCard(
+    key: string,
+    label: string,
+    imageUrl: string | undefined,
+    previewBg: string,
+    uploadBody: object,
+    deleteUrl: string,
+    onUploaded: (url: string) => void,
+    onDeleted: () => void,
+  ) {
+    const hasImage = !!imageUrl;
+    const isUp = uploading === key;
+    const isDel = deleting === key;
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
-        {MOSS_SHADES.map((shade) => {
-          const hasImage = !!shadeImages[shade.name];
-          const isUploading = uploading === shade.name;
-          const isDeleting = deleting === shade.name;
-
-          return (
-            <div
-              key={shade.name}
-              style={{
-                border: "1.5px solid var(--moss-border, #e0e0d8)",
-                borderRadius: "12px",
-                overflow: "hidden",
-                background: "#fff",
-              }}
-            >
-              <div
-                style={{
-                  height: 120,
-                  background: hasImage ? "transparent" : shade.hex,
-                  position: "relative",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                onClick={() => !isUploading && fileRefs.current[shade.name]?.click()}
-              >
-                {hasImage ? (
-                  <img
-                    src={shadeImages[shade.name]}
-                    alt={shade.name}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                ) : (
-                  <Icon name="ImagePlus" size={28} style={{ color: "rgba(255,255,255,0.7)" }} />
-                )}
-                {isUploading && (
-                  <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Icon name="Loader2" size={24} style={{ color: "#fff", animation: "spin 1s linear infinite" }} />
-                  </div>
-                )}
-                <input
-                  ref={(el) => { fileRefs.current[shade.name] = el; }}
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleFileChange(shade.name, file);
-                    e.target.value = "";
-                  }}
-                />
-              </div>
-
-              <div style={{ padding: "0.6rem 0.75rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <span
-                  style={{
-                    width: 14, height: 14, borderRadius: "50%",
-                    background: shade.hex, flexShrink: 0,
-                    border: "1px solid rgba(0,0,0,0.1)",
-                  }}
-                />
-                <span style={{ fontSize: "0.85rem", fontWeight: 500, flex: 1 }}>{shade.name}</span>
-                {hasImage && (
-                  <button
-                    title="Удалить фото"
-                    disabled={isDeleting}
-                    onClick={() => handleDelete(shade.name)}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "var(--moss-muted)", padding: 2 }}
-                  >
-                    <Icon name={isDeleting ? "Loader2" : "Trash2"} size={15} />
-                  </button>
-                )}
-                <button
-                  title={hasImage ? "Заменить фото" : "Загрузить фото"}
-                  disabled={isUploading}
-                  onClick={() => fileRefs.current[shade.name]?.click()}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--moss-muted)", padding: 2 }}
-                >
-                  <Icon name="Upload" size={15} />
-                </button>
-              </div>
+    return (
+      <div
+        key={key}
+        style={{ border: "1.5px solid var(--moss-border, #e0e0d8)", borderRadius: 12, overflow: "hidden", background: "#fff" }}
+      >
+        <div
+          style={{ height: 120, background: hasImage ? "transparent" : previewBg, position: "relative", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => !isUp && fileRefs.current[key]?.click()}
+        >
+          {hasImage ? (
+            <img src={imageUrl} alt={label} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          ) : (
+            <Icon name="ImagePlus" size={28} style={{ color: previewBg === "#f5f5f5" ? "#bbb" : "rgba(255,255,255,0.7)" }} />
+          )}
+          {isUp && (
+            <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Icon name="Loader2" size={24} style={{ color: "#fff", animation: "spin 1s linear infinite" }} />
             </div>
-          );
-        })}
+          )}
+          <input
+            ref={(el) => { fileRefs.current[key] = el; }}
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) uploadFile(key, file, uploadBody, onUploaded);
+              e.target.value = "";
+            }}
+          />
+        </div>
+        <div style={{ padding: "0.6rem 0.75rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <span style={{ fontSize: "0.85rem", fontWeight: 500, flex: 1 }}>{label}</span>
+          {hasImage && (
+            <button title="Удалить" disabled={isDel} onClick={() => { setDeleting(key); deleteFile(deleteUrl, onDeleted); }}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--moss-muted)", padding: 2 }}>
+              <Icon name={isDel ? "Loader2" : "Trash2"} size={15} />
+            </button>
+          )}
+          <button title={hasImage ? "Заменить" : "Загрузить"} disabled={isUp}
+            onClick={() => fileRefs.current[key]?.click()}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--moss-muted)", padding: 2 }}>
+            <Icon name="Upload" size={15} />
+          </button>
+        </div>
       </div>
+    );
+  }
+
+  return (
+    <main style={{ maxWidth: 900, margin: "0 auto", padding: "2rem 1rem 4rem" }}>
+      <h1 style={{ fontFamily: "var(--moss-font)", fontSize: "1.6rem", marginBottom: "1.5rem" }}>
+        Панель управления фото
+      </h1>
+
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "2rem" }}>
+        {([["products", "Товары"], ["shades", "Оттенки"]] as [Tab, string][]).map(([t, label]) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            style={{
+              padding: "0.5rem 1.25rem", borderRadius: 8, border: "1.5px solid var(--moss-border, #e0e0d8)",
+              background: tab === t ? "var(--moss-green, #2d6a4f)" : "#fff",
+              color: tab === t ? "#fff" : "inherit",
+              cursor: "pointer", fontWeight: 500, fontSize: "0.9rem",
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "products" && (
+        <>
+          <p style={{ color: "var(--moss-muted)", marginBottom: "1.5rem", fontSize: "0.9rem" }}>
+            Загрузите главное фото для каждого товара в каталоге.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
+            {PRODUCTS.map((p) => {
+              const key = `product-${p.id}`;
+              return renderImageCard(
+                key,
+                p.name,
+                productImages[String(p.id)] || p.image,
+                "#e8ede9",
+                { kind: "product", product_id: p.id },
+                `${SHADE_IMAGE_URL}?kind=product&product_id=${p.id}`,
+                (url) => setProductImages((prev) => ({ ...prev, [String(p.id)]: url })),
+                () => setProductImages((prev) => { const n = { ...prev }; delete n[String(p.id)]; return n; }),
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {tab === "shades" && (
+        <>
+          <p style={{ color: "var(--moss-muted)", marginBottom: "1.5rem", fontSize: "0.9rem" }}>
+            Загрузите фото для каждого оттенка — оно показывается покупателям при выборе цвета.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
+            {MOSS_SHADES.map((shade) => {
+              const key = `shade-${shade.name}`;
+              return renderImageCard(
+                key,
+                shade.name,
+                shadeImages[shade.name],
+                shade.hex,
+                { shade_name: shade.name },
+                `${SHADE_IMAGE_URL}?shade_name=${encodeURIComponent(shade.name)}`,
+                (url) => setShadeImages((prev) => ({ ...prev, [shade.name]: url })),
+                () => setShadeImages((prev) => { const n = { ...prev }; delete n[shade.name]; return n; }),
+              );
+            })}
+          </div>
+        </>
+      )}
 
       {toast && (
         <div style={{
