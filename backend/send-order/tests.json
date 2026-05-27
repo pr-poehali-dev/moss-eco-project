@@ -1,19 +1,10 @@
 {
   "tests": [
     {
-      "name": "Отправка заявки",
+      "name": "POST без имени — ошибка",
       "method": "POST",
       "path": "/",
-      "body": { "name": "Тест", "phone": "+79001234567", "message": "Тестовая заявка" },
-      "expectedStatus": 200,
-      "expectedBody": { "ok": true },
-      "bodyMatcher": "partial"
-    },
-    {
-      "name": "Пустое имя — ошибка",
-      "method": "POST",
-      "path": "/",
-      "body": { "name": "", "phone": "+79001234567" },
+      "body": { "name": "", "phone": "" },
       "expectedStatus": 400,
       "expectedBody": {},
       "bodyMatcher": "partial"

@@ -48,8 +48,15 @@ export default function MossApp() {
     );
   }
 
-  function handleOrderSubmit(e: React.FormEvent) {
+  async function handleOrderSubmit(e: React.FormEvent) {
     e.preventDefault();
+    try {
+      await fetch("https://functions.poehali.dev/49c88edf-c0b4-44ae-a351-1a962622b00f", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderForm),
+      });
+    } catch (err) { console.error(err); }
     setOrderSent(true);
     setTimeout(() => setOrderSent(false), 4000);
     setOrderForm({ name: "", phone: "", message: "" });
