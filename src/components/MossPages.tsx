@@ -164,6 +164,7 @@ export function MossCartPage({
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [formError, setFormError] = useState("");
 
   useEffect(() => {
     if (user?.name) setName(user.name);
@@ -172,6 +173,9 @@ export function MossCartPage({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setFormError("");
+    if (!name.trim()) { setFormError("Введите имя"); return; }
+    if (!phone.trim()) { setFormError("Введите телефон"); return; }
     setLoading(true);
     const token = localStorage.getItem("moss_token") || "";
     const items = cart.map((i) => ({
@@ -182,7 +186,7 @@ export function MossCartPage({
       unit: i.unit ?? "kg",
     }));
     try {
-      await fetch(SEND_ORDER_URL, {
+      const res = await fetch(SEND_ORDER_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -198,7 +202,17 @@ export function MossCartPage({
           finalTotal,
         }),
       });
-    } catch { /* ignore */ }
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setFormError(data.error || "Ошибка отправки. Попробуйте ещё раз.");
+        setLoading(false);
+        return;
+      }
+    } catch {
+      setFormError("Нет связи. Проверьте интернет и попробуйте ещё раз.");
+      setLoading(false);
+      return;
+    }
     setLoading(false);
     setSent(true);
     onOrderSent?.();
@@ -356,6 +370,9 @@ export function MossCartPage({
                     onChange={(e) => setComment(e.target.value)}
                     style={{ resize: "none" }}
                   />
+                  {formError && (
+                    <p style={{ color: "#e63946", fontSize: "0.85rem", margin: "-0.25rem 0 0" }}>{formError}</p>
+                  )}
                   <button
                     type="submit"
                     className="moss-btn moss-btn--primary moss-btn--full"

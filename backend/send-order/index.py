@@ -114,9 +114,13 @@ def handler(event: dict, context) -> dict:
     """
     msg.attach(MIMEText(html, "html"))
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(smtp_user, smtp_password)
-        server.sendmail(smtp_user, to_email, msg.as_string())
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, to_email, msg.as_string())
+        print("[send-order] email sent OK")
+    except Exception as e:
+        print(f"[send-order] email ERROR: {e}")
 
     items_tg = "\n".join(f"  • {i.get('name','')} × {i.get('qty',1)}" for i in items) if items else "  —"
     tg_text = (
