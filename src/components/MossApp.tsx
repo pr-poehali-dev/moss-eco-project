@@ -1,9 +1,17 @@
-import { useState } from "react";
-import { Lang, Page, Product, CartItem, PRODUCTS, T } from "@/components/moss-data";
+import { useState, useEffect } from "react";
+import { Lang, Page, Product, CartItem, T } from "@/components/moss-data";
 import MossNavbar from "@/components/MossNavbar";
 import MossHomePage from "@/components/MossHomePage";
 import { MossCatalogPage, MossCartPage, MossAccountPage, MossFooter } from "@/components/MossPages";
 import MossAdminPage from "@/components/MossAdminPage";
+
+const AUTH_URL = "https://functions.poehali.dev/7f977656-8009-4b66-bf51-c2621b26e5f6";
+
+export interface MossUser {
+  id: number;
+  email: string;
+  name?: string;
+}
 
 interface OrderForm {
   name: string;
@@ -17,9 +25,20 @@ export default function MossApp() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [filterCat, setFilterCat] = useState("Все");
   const [orderSent, setOrderSent] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<MossUser | null>(null);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [orderForm, setOrderForm] = useState<OrderForm>({ name: "", phone: "", message: "" });
+
+  useEffect(() => {
+    const token = localStorage.getItem("moss_token");
+    if (!token) return;
+    fetch(`${AUTH_URL}?action=me`, {
+      headers: { "Authorization": `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((data) => { if (data.user) setUser(data.user); })
+      .catch(() => {});
+  }, []);
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const cartTotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -63,6 +82,18 @@ export default function MossApp() {
     setOrderSent(true);
     setTimeout(() => setOrderSent(false), 4000);
     setOrderForm({ name: "", phone: "", message: "" });
+  }
+
+  function handleLogout() {
+    const token = localStorage.getItem("moss_token");
+    if (token) {
+      fetch(`${AUTH_URL}?action=logout`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` },
+      }).catch(() => {});
+    }
+    localStorage.removeItem("moss_token");
+    setUser(null);
   }
 
   return (
@@ -118,8 +149,10 @@ export default function MossApp() {
       {page === "account" && (
         <MossAccountPage
           lang={lang}
-          isLoggedIn={isLoggedIn}
-          setIsLoggedIn={setIsLoggedIn}
+          user={user}
+          authUrl={AUTH_URL}
+          onLogin={setUser}
+          onLogout={handleLogout}
         />
       )}
 

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Icon from "@/components/ui/icon";
 import {
   Lang,
@@ -215,28 +216,61 @@ export function MossCartPage({
 }
 
 // ─── Account Page ─────────────────────────────────────────────────────────────
+interface MossUser { id: number; email: string; name?: string; }
+
 interface MossAccountPageProps {
   lang: Lang;
-  isLoggedIn: boolean;
-  setIsLoggedIn: (v: boolean) => void;
+  user: MossUser | null;
+  authUrl: string;
+  onLogin: (user: MossUser) => void;
+  onLogout: () => void;
 }
 
-export function MossAccountPage({ lang, isLoggedIn, setIsLoggedIn }: MossAccountPageProps) {
+export function MossAccountPage({ lang, user, authUrl, onLogin, onLogout }: MossAccountPageProps) {
   const t = T[lang];
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const body: Record<string, string> = { email, password };
+      if (mode === "register") body.name = name;
+      const res = await fetch(`${authUrl}?action=${mode}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "Ошибка"); return; }
+      localStorage.setItem("moss_token", data.token);
+      onLogin(data.user);
+    } catch {
+      setError("Ошибка соединения");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <main className="moss-page">
       <div className="moss-container moss-account">
         <h1 className="moss-page__title">{t.account.title}</h1>
-        {isLoggedIn ? (
+        {user ? (
           <div className="moss-account__logged">
             <div className="moss-account__welcome">
               <div className="moss-account__avatar">
                 <Icon name="User" size={32} />
               </div>
               <div>
-                <h2>{t.account.welcome}</h2>
-                <p>user@example.com</p>
+                <h2>{user.name || t.account.welcome}</h2>
+                <p>{user.email}</p>
               </div>
             </div>
             <div className="moss-account__orders">
@@ -246,24 +280,62 @@ export function MossAccountPage({ lang, isLoggedIn, setIsLoggedIn }: MossAccount
                 <p>{t.account.noOrders}</p>
               </div>
             </div>
-            <button className="moss-btn moss-btn--outline" onClick={() => setIsLoggedIn(false)}>
+            <button className="moss-btn moss-btn--outline" onClick={onLogout}>
               {t.account.logout}
             </button>
           </div>
         ) : (
           <div className="moss-account__auth">
-            <p className="moss-account__sub">{t.account.loginSub}</p>
-            <form
-              className="moss-order-form"
-              onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); }}
-            >
-              <input className="moss-input" type="email" placeholder={t.account.email} required />
-              <input className="moss-input" type="password" placeholder={t.account.password} required />
-              <button type="submit" className="moss-btn moss-btn--primary moss-btn--full">
+            <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
+              <button
+                className={`moss-btn ${mode === "login" ? "moss-btn--primary" : "moss-btn--outline"} moss-btn--sm`}
+                onClick={() => { setMode("login"); setError(""); }}
+              >
                 {t.account.login}
               </button>
-              <button type="button" className="moss-btn moss-btn--outline moss-btn--full">
+              <button
+                className={`moss-btn ${mode === "register" ? "moss-btn--primary" : "moss-btn--outline"} moss-btn--sm`}
+                onClick={() => { setMode("register"); setError(""); }}
+              >
                 {t.account.register}
+              </button>
+            </div>
+            <p className="moss-account__sub">{t.account.loginSub}</p>
+            <form className="moss-order-form" onSubmit={handleSubmit}>
+              {mode === "register" && (
+                <input
+                  className="moss-input"
+                  type="text"
+                  placeholder="Имя"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              )}
+              <input
+                className="moss-input"
+                type="email"
+                placeholder={t.account.email}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <input
+                className="moss-input"
+                type="password"
+                placeholder={t.account.password}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              {error && (
+                <p style={{ color: "#e63946", fontSize: "0.85rem", margin: "-0.25rem 0 0" }}>{error}</p>
+              )}
+              <button
+                type="submit"
+                className="moss-btn moss-btn--primary moss-btn--full"
+                disabled={loading}
+              >
+                {loading ? "..." : mode === "login" ? t.account.login : t.account.register}
               </button>
             </form>
           </div>
