@@ -93,13 +93,13 @@ def handler(event: dict, context) -> dict:
     discount_row = f"<tr style='background:#f0fff4;'><td colspan='2' style='padding:4px 8px; color:#2d6a4f;'><b>Скидка {discount}%</b></td><td style='padding:4px 8px; color:#2d6a4f;'>−{total - final_total:,} ₽</td></tr>" if discount else ""
 
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Новая заявка #{order_id} с сайта MossLab от {name}"
+    msg["Subject"] = f"Новая заявка #{order_id} с сайта Borovik_moss от {name}"
     msg["From"] = smtp_user
     msg["To"] = to_email
 
     html = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px;">
-      <h2 style="color: #2d6a4f;">Новая заявка #{order_id} с сайта MossLab</h2>
+      <h2 style="color: #2d6a4f;">Новая заявка #{order_id} с сайта Borovik_moss</h2>
       <table style="width:100%; border-collapse:collapse; margin-bottom:1rem;">
         <tr><td style="padding:8px; font-weight:bold; color:#555;">Имя:</td><td style="padding:8px;">{name}</td></tr>
         <tr style="background:#f9f9f9;"><td style="padding:8px; font-weight:bold; color:#555;">Телефон:</td><td style="padding:8px;">{phone}</td></tr>
@@ -124,7 +124,7 @@ def handler(event: dict, context) -> dict:
 
     items_tg = "\n".join(f"  • {i.get('name','')} × {i.get('qty',1)}" for i in items) if items else "  —"
     tg_text = (
-        f"🌿 <b>Заявка #{order_id} — MossLab</b>\n\n"
+        f"🌿 <b>Заявка #{order_id} — Borovik_moss</b>\n\n"
         f"<b>Имя:</b> {name}\n"
         f"<b>Телефон:</b> {phone}\n"
         f"<b>Комментарий:</b> {message or '—'}\n\n"

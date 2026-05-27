@@ -33,7 +33,7 @@ export default function MossNavbar({
       <div className="moss-container moss-nav__inner">
         <button className="moss-logo" onClick={() => setPage("home")}>
           <span className="moss-logo__dot" />
-          MossLab
+          Borovik_moss
         </button>
 
         <div className="moss-nav__links">

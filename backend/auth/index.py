@@ -168,12 +168,12 @@ def notify_new_user(email: str, name: str):
     display = name or email
     try:
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"Новый пользователь на MossLab: {display}"
+        msg["Subject"] = f"Новый пользователь на Borovik_moss: {display}"
         msg["From"] = SMTP_USER
         msg["To"] = NOTIFY_EMAIL
         html = f"""
         <div style="font-family: Arial, sans-serif; max-width: 500px;">
-          <h2 style="color: #2d6a4f;">Новый пользователь зарегистрировался на MossLab</h2>
+          <h2 style="color: #2d6a4f;">Новый пользователь зарегистрировался на Borovik_moss</h2>
           <table style="width:100%; border-collapse:collapse;">
             <tr>
               <td style="padding:8px; font-weight:bold; color:#555;">Имя:</td>
@@ -196,7 +196,7 @@ def notify_new_user(email: str, name: str):
     try:
         token = os.environ["TELEGRAM_BOT_TOKEN"]
         url = f"https://api.telegram.org/bot{token}/sendMessage"
-        text = f"👤 <b>Новый пользователь на MossLab</b>\n\n<b>Имя:</b> {name or '—'}\n<b>Email:</b> {email}"
+        text = f"👤 <b>Новый пользователь на Borovik_moss</b>\n\n<b>Имя:</b> {name or '—'}\n<b>Email:</b> {email}"
         data = json.dumps({"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "HTML"}).encode()
         req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
         urllib.request.urlopen(req)
