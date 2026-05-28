@@ -26,10 +26,20 @@ export default function CatalogPage() {
   useEffect(() => {
     const token = localStorage.getItem("moss_token");
     if (!token) return;
-    fetch(`${AUTH_URL}?action=me`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((data) => { if (data.user) setUser(data.user); })
-      .catch(() => {});
+
+    let attempts = 0;
+    function tryMe() {
+      fetch(`${AUTH_URL}?action=me`, { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.user) setUser(data.user);
+          else if (data.error === "Сессия истекла") localStorage.removeItem("moss_token");
+        })
+        .catch(() => {
+          if (attempts < 3) { attempts++; setTimeout(tryMe, 2000 * attempts); }
+        });
+    }
+    tryMe();
   }, []);
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
