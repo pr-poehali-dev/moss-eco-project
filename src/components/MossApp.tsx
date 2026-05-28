@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lang, Page, Product, CartItem, T } from "@/components/moss-data";
+import { Lang, Page, T } from "@/components/moss-data";
+import { useCart } from "@/hooks/useCart";
 import MossNavbar from "@/components/MossNavbar";
 import MossHomePage from "@/components/MossHomePage";
 import { MossCartPage, MossAccountPage, MossFooter } from "@/components/MossPages";
@@ -26,7 +27,7 @@ export default function MossApp() {
   const navigate = useNavigate();
   const [lang, setLang] = useState<Lang>("ru");
   const [page, setPage] = useState<Page>("home");
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const { cart, addToCart, removeFromCart, changeQty } = useCart();
   const [filterCat, setFilterCat] = useState("Все");
   const [orderSent, setOrderSent] = useState(false);
   const [user, setUser] = useState<MossUser | null>(null);
@@ -78,26 +79,6 @@ export default function MossApp() {
   const bonusPct = user && (user.orderCount ?? 0) === 0 ? 5 : 0;
   const discountPct = Math.min(volumePct + bonusPct, 30);
   const finalTotal = Math.round(cartTotal * (1 - discountPct / 100));
-
-  function addToCart(p: Product, shade?: string) {
-    setCart((prev) => {
-      const existing = prev.find((i) => i.id === p.id && i.shade === shade);
-      if (existing) return prev.map((i) => i.id === p.id && i.shade === shade ? { ...i, qty: i.qty + 1 } : i);
-      const name = shade ? `${p.name} — ${shade}` : p.name;
-      const nameEn = shade ? `${p.nameEn} — ${shade}` : p.nameEn;
-      return [...prev, { ...p, name, nameEn, shade, qty: 1 }];
-    });
-  }
-
-  function removeFromCart(id: number) {
-    setCart((prev) => prev.filter((i) => i.id !== id));
-  }
-
-  function changeQty(id: number, delta: number) {
-    setCart((prev) =>
-      prev.map((i) => i.id === id ? { ...i, qty: Math.max(1, i.qty + delta) } : i)
-    );
-  }
 
   async function handleOrderSubmit(e: React.FormEvent) {
     e.preventDefault();
