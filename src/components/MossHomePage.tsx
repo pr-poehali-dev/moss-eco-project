@@ -283,6 +283,11 @@ export default function MossHomePage({
               <div className="moss-contact-card__label">Instagram</div>
               <a href="https://www.instagram.com/borovik_design?igsh=Z3JxN2lzaGZxaGM%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" className="moss-contact-card__value">@borovik_design</a>
             </div>
+            <div className="moss-contact-card">
+              <div className="moss-contact-card__icon"><Icon name="MessageCircle" size={28} /></div>
+              <div className="moss-contact-card__label">Max</div>
+              <a href="https://max.ru/id120804155440_biz" target="_blank" rel="noopener noreferrer" className="moss-contact-card__value">Написать в Max</a>
+            </div>
           </div>
         </div>
       </section>
