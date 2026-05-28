@@ -1646,6 +1646,15 @@ textarea {
   max-width: 860px;
   margin: 0 auto;
 }
+.moss-contacts-grid__last-row {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+.moss-contacts-grid__last-row .moss-contact-card {
+  flex: 0 0 calc(33.333% - 0.75rem);
+}
 
 .moss-contact-card {
   background: white;
