@@ -103,7 +103,7 @@ def register(email: str, password: str, name: str, phone: str = ""):
     return {
         "statusCode": 200,
         "headers": CORS,
-        "body": json.dumps({"token": token, "user": {"id": user_id, "email": email, "name": name, "phone": phone}}),
+        "body": json.dumps({"token": token, "user": {"id": user_id, "email": email, "name": name, "phone": phone, "orderCount": 0}}),
     }
 
 
@@ -129,13 +129,15 @@ def login(email: str, password: str):
         f"INSERT INTO {SCHEMA}.sessions (token, user_id) VALUES (%s, %s)",
         (token, user_id),
     )
+    cur.execute(f"SELECT COUNT(*) FROM {SCHEMA}.orders WHERE user_id = %s", (user_id,))
+    order_count = cur.fetchone()[0]
     conn.commit()
     conn.close()
 
     return {
         "statusCode": 200,
         "headers": CORS,
-        "body": json.dumps({"token": token, "user": {"id": user_id, "email": user_email, "name": user_name, "phone": user_phone}}),
+        "body": json.dumps({"token": token, "user": {"id": user_id, "email": user_email, "name": user_name, "phone": user_phone, "orderCount": order_count}}),
     }
 
 
@@ -152,15 +154,20 @@ def me(token: str):
         (token,),
     )
     row = cur.fetchone()
-    conn.close()
 
     if not row:
+        conn.close()
         return {"statusCode": 401, "headers": CORS, "body": json.dumps({"error": "Сессия истекла"})}
+
+    user_id = row[0]
+    cur.execute(f"SELECT COUNT(*) FROM {SCHEMA}.orders WHERE user_id = %s", (user_id,))
+    order_count = cur.fetchone()[0]
+    conn.close()
 
     return {
         "statusCode": 200,
         "headers": CORS,
-        "body": json.dumps({"user": {"id": row[0], "email": row[1], "name": row[2], "phone": row[3]}}),
+        "body": json.dumps({"user": {"id": row[0], "email": row[1], "name": row[2], "phone": row[3], "orderCount": order_count}}),
     }
 
 

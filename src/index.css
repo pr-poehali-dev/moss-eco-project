@@ -1528,6 +1528,14 @@ textarea {
   opacity: 0;
 }
 
+.moss-discount-hint__row--bonus {
+  border-top: 1px dashed var(--moss-border);
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  color: var(--moss-olive);
+  font-weight: 600;
+}
+
 /* ─── Delivery ───────────────────────────────────────────────────────────────── */
 .moss-delivery-grid {
   display: grid;

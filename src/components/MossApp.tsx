@@ -13,6 +13,7 @@ export interface MossUser {
   email: string;
   name?: string;
   phone?: string;
+  orderCount?: number;
 }
 
 interface OrderForm {
@@ -62,10 +63,12 @@ export default function MossApp() {
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const cartTotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
-  const discountPct =
+  const volumePct =
     cartCount >= 100 ? 20 :
     cartCount >= 21  ? 15 :
     cartCount >= 11  ? 10 : 0;
+  const bonusPct = user && (user.orderCount ?? 0) === 0 ? 5 : 0;
+  const discountPct = Math.min(volumePct + bonusPct, 30);
   const finalTotal = Math.round(cartTotal * (1 - discountPct / 100));
 
   function addToCart(p: Product, shade?: string) {
@@ -145,6 +148,8 @@ export default function MossApp() {
           cartTotal={cartTotal}
           cartCount={cartCount}
           discountPct={discountPct}
+          volumePct={volumePct}
+          bonusPct={bonusPct}
           finalTotal={finalTotal}
           setPage={handleSetPage}
           removeFromCart={removeFromCart}

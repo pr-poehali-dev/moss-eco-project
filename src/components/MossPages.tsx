@@ -122,6 +122,8 @@ interface MossCartPageProps {
   cartTotal: number;
   cartCount: number;
   discountPct: number;
+  volumePct: number;
+  bonusPct: number;
   finalTotal: number;
   setPage: (p: Page) => void;
   removeFromCart: (id: number) => void;
@@ -143,6 +145,8 @@ export function MossCartPage({
   cartTotal,
   cartCount,
   discountPct,
+  volumePct,
+  bonusPct,
   finalTotal,
   setPage,
   removeFromCart,
@@ -271,10 +275,16 @@ export function MossCartPage({
                   <span>{t.cart.total}</span>
                   <span>{cartTotal.toLocaleString()} ₽</span>
                 </div>
-                {discountPct > 0 && (
+                {volumePct > 0 && (
                   <div className="moss-cart-summary__row moss-cart-summary__row--discount">
-                    <span>{t.cart.discount}</span>
-                    <span>−{discountPct}%</span>
+                    <span>Скидка за объём</span>
+                    <span>−{volumePct}%</span>
+                  </div>
+                )}
+                {bonusPct > 0 && (
+                  <div className="moss-cart-summary__row moss-cart-summary__row--discount">
+                    <span>Скидка нового клиента</span>
+                    <span>−{bonusPct}%</span>
                   </div>
                 )}
                 <div className="moss-cart-summary__total">
@@ -334,6 +344,10 @@ export function MossCartPage({
                     <span className="moss-discount-hint__val">−{tier.value}</span>
                   </div>
                 ))}
+                <div className="moss-discount-hint__row moss-discount-hint__row--bonus">
+                  <span>Первый заказ</span>
+                  <span className="moss-discount-hint__val">−5%</span>
+                </div>
               </div>
             </div>
           </div>
@@ -359,7 +373,11 @@ export function MossCartPage({
                 </h3>
                 <p style={{ color: "var(--moss-muted)", fontSize: "0.85rem", marginBottom: "1.25rem" }}>
                   Итого: <b>{finalTotal.toLocaleString()} ₽</b>
-                  {discountPct > 0 && <span style={{ color: "var(--moss-green, #2d6a4f)" }}> (скидка {discountPct}%)</span>}
+                  {discountPct > 0 && (
+                    <span style={{ color: "var(--moss-green, #2d6a4f)" }}>
+                      {" "}(скидка {discountPct}%{bonusPct > 0 && volumePct > 0 ? `: ${volumePct}% за объём + ${bonusPct}% новому клиенту` : bonusPct > 0 ? ": новому клиенту" : ""})
+                    </span>
+                  )}
                 </p>
                 <form className="moss-order-form" onSubmit={handleSubmit}>
                   <input
