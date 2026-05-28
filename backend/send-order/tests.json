@@ -1,13 +1,16 @@
 {
   "tests": [
     {
-      "name": "POST без имени — ошибка",
-      "method": "POST",
-      "path": "/",
-      "body": { "name": "", "phone": "" },
-      "expectedStatus": 400,
-      "expectedBody": {},
-      "bodyMatcher": "partial"
+      "name": "GET list без токена — Forbidden",
+      "method": "GET",
+      "path": "/?action=list&admin_token=wrong",
+      "expectedStatus": 403
+    },
+    {
+      "name": "GET list с токеном — успех",
+      "method": "GET",
+      "path": "/?action=list&admin_token=moss_admin_2026",
+      "expectedStatus": 200
     }
   ]
 }

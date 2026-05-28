@@ -129,7 +129,7 @@ def login(email: str, password: str):
         f"INSERT INTO {SCHEMA}.sessions (token, user_id) VALUES (%s, %s)",
         (token, user_id),
     )
-    cur.execute(f"SELECT COUNT(*) FROM {SCHEMA}.orders WHERE user_id = %s", (user_id,))
+    cur.execute(f"SELECT COUNT(*) FROM {SCHEMA}.orders WHERE user_id = %s AND status = 'paid'", (user_id,))
     order_count = cur.fetchone()[0]
     conn.commit()
     conn.close()
@@ -160,7 +160,7 @@ def me(token: str):
         return {"statusCode": 401, "headers": CORS, "body": json.dumps({"error": "Сессия истекла"})}
 
     user_id = row[0]
-    cur.execute(f"SELECT COUNT(*) FROM {SCHEMA}.orders WHERE user_id = %s", (user_id,))
+    cur.execute(f"SELECT COUNT(*) FROM {SCHEMA}.orders WHERE user_id = %s AND status = 'paid'", (user_id,))
     order_count = cur.fetchone()[0]
     conn.close()
 

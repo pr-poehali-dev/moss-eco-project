@@ -34,19 +34,43 @@ def get_user_id_by_token(token: str):
     return row[0] if row else None
 
 
+ADMIN_TOKEN = "moss_admin_2026"
+
+CORS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Authorization",
+    "Access-Control-Max-Age": "86400",
+}
+
+
 def handler(event: dict, context) -> dict:
-    """Отправляет заявку с сайта на почту, в Telegram и сохраняет заказ в БД."""
+    """Отправляет заявку с сайта на почту, в Telegram, сохраняет заказ в БД. Позволяет менять статус заказа."""
     if event.get("httpMethod") == "OPTIONS":
-        return {
-            "statusCode": 200,
-            "headers": {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Authorization",
-                "Access-Control-Max-Age": "86400",
-            },
-            "body": "",
-        }
+        return {"statusCode": 200, "headers": CORS, "body": ""}
+
+    method = event.get("httpMethod", "POST")
+    params = event.get("queryStringParameters") or {}
+    action = params.get("action", "")
+
+    # Получить все заказы (для админки)
+    if method == "GET" and action == "list":
+        admin_token = params.get("admin_token", "")
+        if admin_token != ADMIN_TOKEN:
+            return {"statusCode": 403, "headers": CORS, "body": json.dumps({"error": "Forbidden"})}
+        return get_all_orders()
+
+    # Сменить статус заказа
+    if method == "PATCH" and action == "status":
+        admin_token = params.get("admin_token", "")
+        if admin_token != ADMIN_TOKEN:
+            return {"statusCode": 403, "headers": CORS, "body": json.dumps({"error": "Forbidden"})}
+        body = json.loads(event.get("body") or "{}")
+        order_id = body.get("orderId")
+        status = body.get("status")
+        if not order_id or not status:
+            return {"statusCode": 400, "headers": CORS, "body": json.dumps({"error": "orderId and status required"})}
+        return update_order_status(order_id, status)
 
     auth_header = (event.get("headers") or {}).get("X-Authorization", "")
     token = auth_header[7:] if auth_header.startswith("Bearer ") else ""
@@ -62,11 +86,7 @@ def handler(event: dict, context) -> dict:
     final_total = body.get("finalTotal", 0)
 
     if not name or not phone:
-        return {
-            "statusCode": 400,
-            "headers": {"Access-Control-Allow-Origin": "*"},
-            "body": json.dumps({"error": "Имя и телефон обязательны"}),
-        }
+        return {"statusCode": 400, "headers": CORS, "body": json.dumps({"error": "Имя и телефон обязательны"})}
 
     conn = psycopg2.connect(os.environ["DATABASE_URL"])
     cur = conn.cursor()
@@ -138,6 +158,43 @@ def handler(event: dict, context) -> dict:
 
     return {
         "statusCode": 200,
-        "headers": {"Access-Control-Allow-Origin": "*"},
+        "headers": CORS,
         "body": json.dumps({"ok": True, "orderId": order_id}),
     }
+
+
+def get_all_orders():
+    conn = psycopg2.connect(os.environ["DATABASE_URL"])
+    cur = conn.cursor()
+    cur.execute(
+        f"SELECT o.id, o.user_id, o.name, o.phone, o.message, o.items, o.total, o.discount, o.final_total, o.status, o.created_at, u.email "
+        f"FROM {SCHEMA}.orders o LEFT JOIN {SCHEMA}.users u ON u.id = o.user_id "
+        f"ORDER BY o.created_at DESC"
+    )
+    rows = cur.fetchall()
+    conn.close()
+    orders = [
+        {
+            "id": r[0], "userId": r[1], "name": r[2], "phone": r[3],
+            "message": r[4], "items": r[5], "total": r[6],
+            "discount": r[7], "finalTotal": r[8], "status": r[9],
+            "createdAt": r[10].isoformat(), "userEmail": r[11],
+        }
+        for r in rows
+    ]
+    return {"statusCode": 200, "headers": CORS, "body": json.dumps({"orders": orders})}
+
+
+def update_order_status(order_id: int, status: str):
+    allowed = ("new", "confirmed", "paid", "shipped", "cancelled")
+    if status not in allowed:
+        return {"statusCode": 400, "headers": CORS, "body": json.dumps({"error": "Invalid status"})}
+    conn = psycopg2.connect(os.environ["DATABASE_URL"])
+    cur = conn.cursor()
+    cur.execute(f"UPDATE {SCHEMA}.orders SET status = %s WHERE id = %s RETURNING id", (status, order_id))
+    row = cur.fetchone()
+    conn.commit()
+    conn.close()
+    if not row:
+        return {"statusCode": 404, "headers": CORS, "body": json.dumps({"error": "Order not found"})}
+    return {"statusCode": 200, "headers": CORS, "body": json.dumps({"ok": True})}

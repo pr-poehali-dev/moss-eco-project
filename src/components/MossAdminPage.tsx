@@ -32,10 +32,74 @@ const MOSS_SHADES = [
   { name: "Фиолетовый", hex: "#7b2d8b" },
 ];
 
-type Tab = "products" | "shades";
+const SEND_ORDER_URL = "https://functions.poehali.dev/49c88edf-c0b4-44ae-a351-1a962622b00f";
+const ADMIN_TOKEN = "moss_admin_2026";
+
+const STATUS_LABELS: Record<string, string> = {
+  new: "Новый",
+  confirmed: "Подтверждён",
+  paid: "Оплачен",
+  shipped: "Отгружен",
+  cancelled: "Отменён",
+};
+const STATUS_COLORS: Record<string, string> = {
+  new: "#f59e0b",
+  confirmed: "#3b82f6",
+  paid: "#22c55e",
+  shipped: "#8b5cf6",
+  cancelled: "#ef4444",
+};
+
+interface Order {
+  id: number;
+  userId: number | null;
+  name: string;
+  phone: string;
+  message: string | null;
+  items: { name: string; qty: number; price: number; unit?: string }[];
+  total: number;
+  discount: number;
+  finalTotal: number;
+  status: string;
+  createdAt: string;
+  userEmail: string | null;
+}
+
+type Tab = "orders" | "products" | "shades";
 
 export default function MossAdminPage() {
-  const [tab, setTab] = useState<Tab>("products");
+  const [tab, setTab] = useState<Tab>("orders");
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (tab === "orders") loadOrders();
+  }, [tab]);
+
+  async function loadOrders() {
+    setOrdersLoading(true);
+    try {
+      const res = await fetch(`${SEND_ORDER_URL}?action=list&admin_token=${ADMIN_TOKEN}`);
+      const data = await res.json();
+      setOrders(data.orders || []);
+    } catch { /* ignore */ }
+    setOrdersLoading(false);
+  }
+
+  async function updateStatus(orderId: number, status: string) {
+    setUpdatingId(orderId);
+    try {
+      await fetch(`${SEND_ORDER_URL}?action=status&admin_token=${ADMIN_TOKEN}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, status }),
+      });
+      setOrders((prev) => prev.map((o) => o.id === orderId ? { ...o, status } : o));
+      showToast("Статус обновлён");
+    } catch { showToast("Ошибка обновления"); }
+    setUpdatingId(null);
+  }
   const [shadeImages, setShadeImages] = useState<Record<string, string>>({});
   const [productImages, setProductImages] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState<string | null>(null);
@@ -164,7 +228,7 @@ export default function MossAdminPage() {
       </h1>
 
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "2rem" }}>
-        {([["products", "Товары"], ["shades", "Оттенки"]] as [Tab, string][]).map(([t, label]) => (
+        {([["orders", "Заказы"], ["products", "Товары"], ["shades", "Оттенки"]] as [Tab, string][]).map(([t, label]) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -179,6 +243,76 @@ export default function MossAdminPage() {
           </button>
         ))}
       </div>
+
+      {tab === "orders" && (
+        <>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+            <p style={{ color: "var(--moss-muted)", fontSize: "0.9rem" }}>
+              Управляйте статусами заказов. Скидка 5% нового клиента сгорает после первого <b>оплаченного</b> заказа.
+            </p>
+            <button onClick={loadOrders} style={{ background: "none", border: "1.5px solid var(--moss-border, #e0e0d8)", borderRadius: 8, padding: "0.4rem 0.9rem", cursor: "pointer", fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <Icon name="RefreshCw" size={14} /> Обновить
+            </button>
+          </div>
+          {ordersLoading ? (
+            <div style={{ textAlign: "center", padding: "3rem", color: "var(--moss-muted)" }}>
+              <Icon name="Loader2" size={32} />
+            </div>
+          ) : orders.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "3rem", color: "var(--moss-muted)" }}>Заказов пока нет</div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {orders.map((order) => (
+                <div key={order.id} style={{ border: "1.5px solid var(--moss-border, #e0e0d8)", borderRadius: 12, background: "#fff", overflow: "hidden" }}>
+                  <div style={{ padding: "0.85rem 1.25rem", display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", borderBottom: "1px solid var(--moss-border, #e0e0d8)", background: "#fafaf7" }}>
+                    <span style={{ fontWeight: 700, fontSize: "0.95rem" }}>#{order.id}</span>
+                    <span style={{ fontWeight: 600 }}>{order.name}</span>
+                    <a href={`tel:${order.phone}`} style={{ color: "var(--moss-olive, #5a7a4a)", fontSize: "0.9rem" }}>{order.phone}</a>
+                    {order.userEmail && <span style={{ fontSize: "0.8rem", color: "var(--moss-muted)" }}>{order.userEmail}</span>}
+                    <span style={{ marginLeft: "auto", fontSize: "0.78rem", color: "var(--moss-muted)" }}>
+                      {new Date(order.createdAt).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                    <span style={{ padding: "0.25rem 0.75rem", borderRadius: 20, fontSize: "0.78rem", fontWeight: 700, background: STATUS_COLORS[order.status] + "22", color: STATUS_COLORS[order.status] }}>
+                      {STATUS_LABELS[order.status] ?? order.status}
+                    </span>
+                  </div>
+                  <div style={{ padding: "0.85rem 1.25rem" }}>
+                    {order.items?.map((item, i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.87rem", padding: "0.2rem 0", borderBottom: "1px dashed #eee" }}>
+                        <span>{item.name} × {item.qty} {item.unit === "m2" ? "м²" : "кг"}</span>
+                        <span style={{ fontWeight: 600 }}>{(item.price * item.qty).toLocaleString()} ₽</span>
+                      </div>
+                    ))}
+                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.5rem", fontWeight: 700 }}>
+                      <span>Итого{order.discount > 0 ? ` (скидка ${order.discount}%)` : ""}:</span>
+                      <span>{order.finalTotal?.toLocaleString()} ₽</span>
+                    </div>
+                    {order.message && <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", color: "var(--moss-muted)" }}>💬 {order.message}</p>}
+                    <div style={{ marginTop: "0.85rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                      {Object.entries(STATUS_LABELS).map(([key, label]) => (
+                        <button
+                          key={key}
+                          disabled={order.status === key || updatingId === order.id}
+                          onClick={() => updateStatus(order.id, key)}
+                          style={{
+                            padding: "0.3rem 0.8rem", borderRadius: 8, fontSize: "0.8rem", fontWeight: 600, cursor: order.status === key ? "default" : "pointer",
+                            border: `1.5px solid ${STATUS_COLORS[key]}`,
+                            background: order.status === key ? STATUS_COLORS[key] : "transparent",
+                            color: order.status === key ? "#fff" : STATUS_COLORS[key],
+                            opacity: updatingId === order.id ? 0.6 : 1,
+                          }}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
 
       {tab === "products" && (
         <>
