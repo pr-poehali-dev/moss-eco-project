@@ -206,11 +206,11 @@ export default function MossHomePage({
             </div>
             <div className="moss-delivery-card">
               <div className="moss-delivery-card__icon">
-                <Icon name="Package" size={32} />
+                <Icon name="Zap" size={32} />
               </div>
-              <h3 className="moss-delivery-card__title">Почта России</h3>
-              <p className="moss-delivery-card__desc">Доставка в любой регион страны. Срок 5–14 дней.</p>
-              <div className="moss-delivery-card__price">от 250 ₽</div>
+              <h3 className="moss-delivery-card__title">Доставка до Москвы</h3>
+              <p className="moss-delivery-card__desc">Экспресс-доставка до Москвы за 1 день.</p>
+              <div className="moss-delivery-card__price">от 500 ₽</div>
             </div>
             <div className="moss-delivery-card">
               <div className="moss-delivery-card__icon">
