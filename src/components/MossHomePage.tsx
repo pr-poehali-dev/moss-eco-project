@@ -273,6 +273,11 @@ export default function MossHomePage({
               <div className="moss-contact-card__label">Telegram</div>
               <a href="https://t.me/borov1kkk" target="_blank" rel="noopener noreferrer" className="moss-contact-card__value">@borov1kkk</a>
             </div>
+            <div className="moss-contact-card">
+              <div className="moss-contact-card__icon"><Icon name="Users" size={28} /></div>
+              <div className="moss-contact-card__label">ВКонтакте</div>
+              <a href="https://vk.com/borovik_design" target="_blank" rel="noopener noreferrer" className="moss-contact-card__value">vk.com/borovik_design</a>
+            </div>
           </div>
         </div>
       </section>
